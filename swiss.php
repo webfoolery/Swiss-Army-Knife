@@ -9,14 +9,53 @@ jimport( 'joomla.plugin.plugin' );
 // TODO:: IP BASED VISITOR BLACKLIST
 // TODO:: MASTER USER LOGIN --> CAN'T BE DONE IN plgSystem AS onUserAuthenticate WON'T TRIGGER UNLESS IN AN AUTHENTICATION PLUGIN...
 // TODO:: UNABLE TO SHOW SYSTEM MESSAGE AFTER LOGOUT. ONE CLICK SHOULD TELL PEOPLE THEY'RE LOGGED OUT
+// TODO:: DATABASE LOGGING NEEDS FINISHING
+	// CURRENTLY OUTPUTS TO SCREEN, NEED FILE OPTIONS, LIMIT USER OPTIONS ETC.
 
 class plgSystemSwiss extends JPlugin {
+	protected $logDB = false;
 	
 	public function __construct( &$subject, $config ) {
 		parent::__construct( $subject, $config );
 		// Do some extra initialisation in this constructor if required
         $lang = JFactory::getLanguage();
         $lang->load('plg_system_swiss', JPATH_ADMINISTRATOR);
+		
+		
+		if ($this->params->get('debugOutputEnabled', 0) == 1 && $this->params->get('queries', 0) == 1) {
+			// ENABLE THE LOGGING OF QUERIES 
+			if (JFactory::getApplication()->isAdmin() == false) {
+				JFactory::getDbo()->setDebug(true);
+				$this->logDB = true;
+			}
+		}
+		 
+	}
+	
+	public function __destruct() {
+		if ($this->logDB) $this->storeDatabaseLog();
+	}
+	
+	public function storeDatabaseLog() {
+		$db	= JFactory::getDbo();
+		$log = $db->getLog();
+		if (!$log) return
+		$queryList = [];
+		foreach ($log as $k => $sql) {
+			// echo $k.' = '.$sql.'<hr />';
+			if (strpos(strtolower($sql), 'select') !== 10) {
+				if (strpos(strtolower($sql), 'show') !== 10) {
+					$queryList[] = str_replace(array("\r\n", "\r", "\n"), ' ', $sql);
+				}
+			}
+		}
+		if (count($queryList)) {
+			$logFile = '../dblog.sql';
+			// SAVE QUERIES TO A FILE
+			// file_put_contents($logFile, '--'.date('Y-m-d H:i:s').PHP_EOL, FILE_APPEND);
+			// file_put_contents('../dblog.sql', implode(PHP_EOL, $queryList).PHP_EOL, FILE_APPEND);
+			echo '<div class="dbLog"><h1>Database log:</h1>'.implode('<hr style="margin:0;padding:0;border-bottom:1px solid black;" />', $queryList).'</div>';
+		}
 	}
 
 	function onBeforeRender() {
@@ -132,7 +171,10 @@ class plgSystemSwiss extends JPlugin {
 	}
 
 	function onAfterRender() {
+		/* This event is triggered after the framework has rendered the application. */
+		/* When this event is triggered the output of the application is available in the response buffer. */
 		$app = JFactory::getApplication();
+		if ($this->params->get('enableAdminLink', false) == 1) $this->enableAdminLink();
 		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
 		if ($this->params->get('replaceAnywhereEnabled', false) == 1) $this->replaceContentAnywhere();
 		if ($this->params->get('cookieDirectiveEnabled', false) == 1) $this->cookieDirective();
@@ -163,70 +205,107 @@ class plgSystemSwiss extends JPlugin {
 		
 		// APPLY THE SESSION KEEPALIVE OR SESSION END ALERT IF NEEDED
 		if (!$user->guest) {
-			if ($this->params->get('enableKeepAliveAllPages', false) == 1 && array_intersect($this->params->get('keepaliveUsergroup', array()), $user->groups)) {
-				JHtml::_('behavior.keepalive');
-			}
-			else if($this->params->get('enableSessionEndAlert', false) == 1 && array_intersect($this->params->get('sessionEndAlertUsergroup', array()), $user->groups)) {
-				$config = JFactory::getConfig();
-				$timeout = $config->get('lifetime');
-				$timeout = ($timeout * 60 * 1000) - 180000; // 3 MINUTES LESS THAN J!CONFIG TIMEOUT
-				// $timeout = 5000; // FOR TESTING
-				if ($this->params->get('sessionEndAlertType', 'modal') == 'alert') {
-					$sessionAlertJavascript = "
-						setTimeout(fireKeepAlive,$timeout);
-						function fireKeepAlive() {
-							var keepAlive = confirm('Your user session has been inactive and you will be logged out in a few minutes.\\n\\nClick OK to stay logged in or Cancel to log out');
-							if (keepAlive) {
-								var myAjax = new Request({method: 'get', url: 'index.php'}).send();
-								setTimeout(fireKeepAlive,$timeout);
+			$keepAliveActive = false;
+			$activeScripts = serialize($doc->_script);
+			// echo "<pre>";echo $this->pp($doc->_script);echo "</pre>";
+			if (strpos($activeScripts, 'function keepAlive') !== false) $keepAliveActive = true; // J!2.5 CHECK
+			if (strpos($activeScripts, '{r.open("GET","./",true);r.send(null)}') !== false) $keepAliveActive = true; // J!3.x CHECK
+			if (!$keepAliveActive) {
+				if ($this->params->get('enableKeepAliveAllPages', false) == 1) {
+					// echo $this->pp($this->params->get('keepaliveUsergroup'));
+					if (count($this->params->get('keepaliveUsergroup', array())) == 0 || array_intersect($this->params->get('keepaliveUsergroup', array()), $user->groups)) {
+						JHtml::_('behavior.keepalive');
+					}
+				}
+				else if($this->params->get('enableSessionEndAlert', 0) != false && array_intersect($this->params->get('sessionEndAlertUsergroup', array()), $user->groups)) {
+					$alertType = $this->params->get('enableSessionEndAlert', 'modal');
+					// exit($alertType);
+					$config = JFactory::getConfig();
+					$sessionTime = $config->get('lifetime');
+					// $sessionTime = 3; // FOR TESTING
+					$alertTime = $this->params->get('sessionEndStartTime', 120);
+					$timeout = (($sessionTime * 60) - (int)$alertTime) * 1000; // BECAUSE JS USES MILLISECONDS
+					if ($this->params->get('sessionEndTestMode', false) == 1) {
+						$alertTime = 10;
+						$timeout = 5000;
+					}
+					if ($alertType == 'alert') {
+						$sessionAlertJavascript = "
+							setTimeout(fireKeepAlive,".$timeout.");
+							function fireKeepAlive() {
+								triggerSessionEndAlert = setTimeout(fireSessionEnded,(".$alertTime * 1000 ."));
+								var keepAlive = confirm('Your user session has been inactive and you will be logged out shortly.\\n\\nClick OK to stay logged in or Cancel to allow the session to end.');
+								if (keepAlive) {
+									clearTimeout(triggerSessionEndAlert);
+									var myAjax = new Request({method: 'get', url: 'index.php'}).send();
+									setTimeout(fireKeepAlive,".$timeout.");
+								}
 							}
-						}
-						";
-				}
-				else {
-					JHtml::_('behavior.modal');
-					// $html = '<p style="text-align:center;padding:10px;">Your user session has been inactive and you will be logged out automatically in a few minutes.<br /><br /><button type="button" id="allowMaintainSession" onclick="keepSessionAlive();window.parent.SqueezeBox.close();">Keep me logged in</button><button type="button" id="allowExpireSession" onclick="window.parent.SqueezeBox.close();">Allow my session to end</button></p>';
-					$html = '<p style="text-align:center;padding:10px;">Your user session has been inactive and you will be logged out automatically in <span id="logoutTimer"></span> seconds.<br /><br /><button type="button" id="allowMaintainSession" onclick="return keepSessionAlive();">Keep me logged in</button><button type="button" id="allowExpireSession" onclick="return allowExpire();">Allow my session to end</button></p>';
-					$sessionAlertJavascript = <<<JAVASCRIPT
-setTimeout(showModal,$timeout);
-function showModal() {
-	sessionEndingSoonAlert = new Element('div#sessionEndingAlertContainer').set('html',  '$html');
-	SqueezeBox.open(sessionEndingSoonAlert, {handler: 'adopt', size: {x: 400, y: 150}});
-	setTimeout(function(){countdownTimer = setInterval(countdown, 1000);},1000);
-}
-function countdown() {
-	if ($('logoutTimer')) current = $('logoutTimer').get('text');
-	if (!$('logoutTimer') || current == '') current = 180;
-	$('logoutTimer').set('text', Number(current)-1);
-	if (current <= 1) showSessionEnded();
-}
-function showSessionEnded() {
-	clearInterval(countdownTimer);
-	window.parent.SqueezeBox.close();
-	sessionhasEndedAlert = new Element('div#sessionHasEnded').set('html',  '<p style="text-align:center;padding:10px;">Your session has ended. You will have to log in again to continue.</p>');
-	SqueezeBox.open(sessionhasEndedAlert, {handler: 'adopt', size: {x: 200, y: 100}});
-}
-function keepSessionAlive() {
-	clearInterval(countdownTimer);
-	var myAjax = new Request({method: 'get', url: 'index.php'}).send();
-	window.parent.SqueezeBox.close();
-	setTimeout(showModal,$timeout);
-}
-function allowExpire() {
-	clearInterval(countdownTimer);
-	window.parent.SqueezeBox.close();
-}
-// window.addEvent('domready', function() {
-	// SqueezeBox.initialize();
-// });
+							function fireSessionEnded() {alert('You have been logged out due to inactivity');}
+							";
+					}
+					else {
+						JHtml::_('behavior.modal');
+						// $alertText = '<p style="text-align:center;padding:10px;">Your user session has been inactive and you will be logged out automatically in a few minutes.<br /><br /><button type="button" id="allowMaintainSession" onclick="keepSessionAlive();window.parent.SqueezeBox.close();">Keep me logged in</button><button type="button" id="allowExpireSession" onclick="window.parent.SqueezeBox.close();">Allow my session to end</button></p>';
+						$alertText = $this->params->get('sessionEndAlertModalText', '<p class="sessionEndWarningText">Your user session has been inactive and you will be logged out automatically in {countdown}');
+						$sessionEndedModalText = $this->params->get('sessionEndedModalText', '<p class="sessionEndExpiredText">Your session has ended. You will have to log in again to continue.</p>');
+						$sessionEndAlertModalSize = $this->params->get('sessionEndAlertModalSize', '400x150');
+						$sessionEndedModalSize = $this->params->get('sessionEndedModalSize', '400x150');
+						list($alertModalWidth, $alertModalHeight) = explode("x", $sessionEndAlertModalSize);
+						list($endedModalWidth, $endedModalHeight) = explode("x", $sessionEndedModalSize);
+						$alertText = str_replace('{countdown}', '<span id="logoutTimer">'.floor($alertTime/60).':'.str_pad($alertTime%60, 2, '0', STR_PAD_LEFT).'</span>', $alertText);
+						$alertText .= '<p class="sessionEndAlertButtonContainer"><button type="button" id="allowMaintainSession" onclick="return keepSessionAlive();">Keep me logged in</button><button type="button" id="allowExpireSession" onclick="return allowExpire();">Allow my session to end</button></p>';
+						$sessionAlertJavascript = <<<JAVASCRIPT
+							setTimeout(showModal,$timeout);
+							function showModal() {
+								sessionEndingSoonAlert = new Element('div#sessionEndingAlertContainer').set('html',  '$alertText');
+								SqueezeBox.open(sessionEndingSoonAlert, {handler: 'adopt', size: {x: $alertModalWidth, y: $alertModalHeight}});
+								setTimeout(function(){countdownTimer = setInterval(countdown, 1000);},1000);
+							}
+							function countdown() {
+								if (typeof countdown.current === 'undefined') countdown.current = $alertTime;
+								countdown.current --;
+								if (countdown.current < 0) showSessionEnded();
+								var minutes = Math.floor(countdown.current / 60);
+								var seconds = countdown.current % 60;
+								if ($('logoutTimer')) $('logoutTimer').set('text', minutes+':'+('0'+seconds).slice(-2));
+								// console.log( minutes+':'+('0'+seconds).slice(-2));
+							}
+							function showSessionEnded() {
+								// console.log('session ended!');
+								clearInterval(countdownTimer);
+								window.parent.SqueezeBox.close();
+								sessionhasEndedAlert = new Element('div#sessionHasEnded').set('html',  '$sessionEndedModalText');
+								SqueezeBox.open(sessionhasEndedAlert, {handler: 'adopt', size: {x: $endedModalWidth, y: $endedModalHeight}});
+							}
+							function keepSessionAlive() {
+								clearInterval(countdownTimer);
+								var myAjax = new Request({method: 'get', url: 'index.php'}).send();
+								window.parent.SqueezeBox.close();
+								setTimeout(showModal,$timeout);
+							}
+							function allowExpire() {
+								// clearInterval(countdownTimer);
+								window.parent.SqueezeBox.close();
+							}
+							// window.addEvent('domready', function() {
+								// SqueezeBox.initialize();
+							// });
 JAVASCRIPT;
+						$sessionAlertCss = ".sessionEndAlertButtonContainer{text-align:center;}
+								.sessionEndWarningText{text-align:center;padding:10px;line-height:100%;}
+								.sessionEndExpiredText{text-align:center;padding:10px;line-height:100%;}
+								.sessionEndAlertButtonContainer{margin:0;padding:0;}
+								button#allowMaintainSession, button#allowExpireSession{padding:5px;margin:0 3px;}";
+						$doc->addStyleDeclaration ($sessionAlertCss);
+					}
+					$doc->addScriptDeclaration ($sessionAlertJavascript);
+					
 				}
-				$doc->addScriptDeclaration ($sessionAlertJavascript);
-				
 			}
 		}
 		
-		// INSERT ANY REQUESTED JAVASCRIPT
+		// INSERT ANY REQUESTED JAVASCRIPT OR CSS
 		if ($this->params->get('insertCodeEnabled', false) == 1) {
 			$insertCss = $this->params->get('css', '');
 			$insertCssExternal = $this->params->get('cssExternal', '');
@@ -266,6 +345,7 @@ JAVASCRIPT;
 					right:0;
 					text-align: center;
 					display:block;
+					z-index:999;
 				}
 				p.swissCookieInfoText {
 					display:inline-block;
@@ -286,10 +366,10 @@ JAVASCRIPT;
 		if (!$app->isSite()) return true; // DO NOT RUN IN ADMIN AREA
 		
 		// HANDLE DISPLAY OF LOGIN MESSAGE
-		if ($this->params->get('afterLoginSystemMessageEnabled', false) == 1) {
+		if ($this->params->get('afterLoginSystemMessageEnabled', 0) != false) {
 			$afterLoginSystemMessage = $this->params->get('afterLoginSystemMessage');
 			if (strlen($afterLoginSystemMessage)) {
-				$afterLoginSystemMessageType = $this->params->get('afterLoginSystemMessageType', 'message');
+				$afterLoginSystemMessageType = $this->params->get('afterLoginSystemMessageEnabled', 'message');
 				$app->enqueueMessage($afterLoginSystemMessage, $afterLoginSystemMessageType);
 			}
 		}
@@ -415,6 +495,19 @@ JAVASCRIPT;
 		return true;
     }
 	
+	function pp($arr){
+		$retStr = '<ul>';
+		if (is_array($arr) || is_object($arr)){
+			foreach ($arr as $key=>$val){
+				if (is_array($val)) $retStr .= '<li>' . $key . ' [array] => ' . $this->pp($val) . '</li>';
+				elseif (is_object($val)) $retStr .= '<li>' . $key . ' [object] => ' . $this->pp($val) . '</li>';
+				else $retStr .= '<li>' . $key . ' => ' . $val . '</li>';
+			}
+		}
+		$retStr .= '</ul>';
+		return $retStr;
+	}
+	
 	
 	function killMessage($messageText) {
 		// REMOVE A MESSAGE FROM THE MESSAGE QUEUE
@@ -435,4 +528,15 @@ JAVASCRIPT;
 		}
 		$_messageQueue->setValue($app,$messages);
 	}
+	
+    function enableAdminLink()  {
+		// FORCE BACKEND ADMIN LINK TO ALWAYS WORK
+		$body = JResponse::getBody();
+		// exit('xxx'.$body).
+		// CSS IS ADDED IN THE onBeforeCompileHead METHOD
+		// $body = str_replace('<a class="admin-logo disabled">', '<a class="admin-logo" href="index.php">', $body);
+		$body = str_replace('admin-logo disabled', 'admin-logo" href="index.php', $body);
+		JResponse::setBody($body);
+		return true;
+    }
 }

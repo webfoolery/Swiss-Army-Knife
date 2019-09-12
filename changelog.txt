@@ -1,0 +1,12 @@
+2014-12-16 
+	Added external CSS sources
+2014-12-29 
+	Added front end session maintaining tools, usergroup based keepalive and usergroup based end of session alerts
+2019-09-10
+	Changed version to 1.6
+	Added FORCE ENABLE BACKEND ADMIN LINK to prevent Isis admin template from disabling the top left admin link/icon
+	Added database query output. Needs save option and also needs ability to be limited by IP, user etc.
+	Session management:
+		This isn't working, also looks like J! is doing this automatically for Superadmin?
+		Removed Mootools dependency in field widthheight
+	Tested in Joomla 3.9.11 & seems to work in all aspects other than experimental stuff

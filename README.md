@@ -25,28 +25,43 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 
 * **WIP - Debugging output** When enabled you can (will) be able to see queries, memory usage and page profiling.
 
-* **WIP - Keep-alive/session end alert** When enabled the default session time of Joomla! will be negated as a small XHR reuest will be sent to the server to renew the user session automatically. This could be handy for users working on large content (eg. articles) that don't save frequently enough to avoid being automatically logged out of the system. The session end alert is intended to be linke the banking websites, ie. a message will pop up to say `You'll be logged out in 10 seconds'` but this is still WIP.
+* **WIP - Keep-alive/session end alert** When enabled the default session time of Joomla! will be negated as a small XHR reuest will be sent to the server to renew the user session automatically. This could be handy for users working on large content (eg. articles) that don't save frequently enough to avoid being automatically logged out of the system. The session end alert is intended to be linke the banking websites, ie. a message will pop up to say `'You'll be logged out in 10 seconds'` but this is still WIP.
+
+* **Force enable admin link** In newer Joomla! versions (3+ I think) the icon link to the `/administrator` page in the top left of the administrator area becomes disabled when you are inside an extension or setting. This will allow that to always be active, so if you need another admin page It's simple to middle click it to open another one.
 
 ## Changelog
 **2014-10-07**  
 Initial draft version
+
 **2014-12-08**  
-Code tidying
-Adds custom home page for registered users
-Adds Generator metatag fixer
+Code tidying  
+Adds custom home page for registered users  
+Adds Generator metatag fixer  
+
 **2014-12-09**  
 Version update: 1.2
 Adds offline mode function
+
 **2014-12-26**  
-Version update: 1.4
-Adds logout redirection
-Adds usergroup based login/out redirection
-Adds external links option for code insertion
-Adds one click logout
-Updates user home page options by allowing different user groups to have different home pages set.
-Adds *Experimental* section containing works in progress (WIP)
-Adds debugging options in WIP with possibilities to show queries, page profiling, memory usage etc.
+Version update: 1.4  
+Adds logout redirection  
+Adds usergroup based login/out redirection  
+Adds external links option for code insertion  
+Adds one click logout  
+Updates user home page options by allowing different user groups to have different home pages set.  
+Adds *Experimental* section containing works in progress (WIP)  
+Adds debugging options in WIP with possibilities to show queries, page profiling, memory usage etc.  
+
 **2014-12-29**  
-Version update: 1.5
-Adds keepalive/session end alerts
-Small code improvements
+Version update: 1.5  
+Adds keepalive/session end alerts  
+Small code improvements  
+Adds an update server  
+
+**2019-09-12**  
+Version update: 1.6  
+Tested in J!3.9.11, seems OK!  
+Adds proper Joomla! language folder structure  
+Adds Force enable admin link  
+Adds database query dump option in Debug 
+Slight changes to update server   

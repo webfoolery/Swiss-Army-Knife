@@ -2,42 +2,24 @@
 <extension version="2.5" type="plugin" group="system">
 	<name>System - Swiss Army Knife</name>
 	<author>Chris Sheridan</author>
-	<creationDate>2014-08-21</creationDate>
+	<creationDate>2019-09-10</creationDate>
 	<copyright>Copyright (C) 2104 webfoolery. All rights reserved.</copyright>
 	<license>GNU General Public License</license>
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
-	<version>1.5</version>
+	<version>1.6.0</version>
 	<updateservers>
 		<server type="extension" name="Swiss Army Knife" priority="1">http://webfoolery.com/downloads/joomla/update_plgSysSwiss_J2.5.xml</server>
 	</updateservers>
-	<description>
-		<![CDATA[
-			<div style="-webkit-box-shadow: 5px 5px 5px;-moz-box-shadow: 5px 5px 5px;box-shadow: 5px 5px 5px;border:1px solid #444;background-color:#eee;padding:10px;border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:10px;">
-				<p>A Swiss army knife system plugin for managing... stuff! Current tools include:</p>
-				<ul>
-					<li>Replace content anywhere</li>
-					<li>EU Cookie Directive alert</li>
-					<li>Usergroup based redirect after login or logout</li>
-					<li>System message after login</li>
-					<li>Generator metatag fixer</li>
-					<li>custom home pages</li>
-					<li>Insert HTML/JS/CSS incl. external CSS/JS sources to head or body</li>
-					<li>Failed login redirect, message & delay</li>
-					<li>Take site offline, redirect to URL or display custom HTML</li>
-					<li>Enable usergroup based session keepalive</li>
-					<li>Enable usergroup based session inactivity/expiry alert</li>
-					<!--<li>Auto login after registration</li>-->
-				</ul>
-			</div>
-			<style>h3#PLG_SWISS_EXPERIMENTAL_FIELDSET_LABEL-options a span{color:#bbb;}</style>
-		]]>
-	</description>
+	<description>PLG_SYS_SWISS_DESCRIPTION</description>
 	<files>
 		<filename plugin="swiss">swiss.php</filename>
+		<folder>fields</folder>
+		<folder>language</folder>
 	</files>
-    <languages>
-        <language tag="en-GB">en-GB.plg_system_swiss.ini</language>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_system_swiss.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_system_swiss.sys.ini</language>
     </languages> 
     <config>
         <fields name="params">
@@ -71,7 +53,7 @@
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="replaceCustom" type="textarea" rows="4" cols="40" filter="raw" default="" label="Custom replacement strings" description="If you have enabled replaceAnywhere you can add your own sitewide search/replace strings here. Each pair must be on its own line separated by =>, the format is:&lt;br /&gt;search1=>replace1&lt;br /&gt;search2=>replace2&lt;br /&gt;search3=>replace3&lt;br /&gt;" />
+				<field name="replaceCustom" type="textarea" rows="4" cols="40" filter="raw" default="" label="Custom replacement strings" description="If you have enabled replaceAnywhere you can add your own sitewide search/replace strings here. Each pair must be on its own line separated by =>, the format is:&lt;br /&gt;search1=>replace1&lt;br /&gt;search2=>replace2&lt;br /&gt;search3=>replace3&lt;br /&gt;&lt;br /&gt;2 things to note:&lt;br /&gt;1) You can enter HTML here&lt;br /&gt;2) This will also replace content in the HEAD section - so be careful!" />
 			</fieldset>
 
 
@@ -80,33 +62,36 @@
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="css" type="textarea" rows="4" cols="40" filter="raw" default="" label="Enter some CSS" description="If you have enabled code insertion you can add CSS here that will be added to the head section of the rendered page" />
-				<field name="cssExternal" type="textarea" rows="4" cols="40" filter="raw" default="" label="External CSS sources" description="If you have enabled code insertion you can add external CSS sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
-				<field name="javascript" type="textarea" rows="4" cols="40" filter="raw" default="" label="Enter Javascript code" description="If you have enabled code insertion you can add Javascript here that will be added to the head section of the the rendered page" />
-				<field name="javascriptExternal" type="textarea" rows="4" cols="40" filter="raw" default="" label="External JS sources" description="If you have enabled code insertion you can add external Javascript sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
-				<field name="bodyStart" type="textarea" rows="4" cols="40" filter="raw" default="" label="After opening BODY tag" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the BODY tag" />
-				<field name="bodyEnd" type="textarea" rows="4" cols="40" filter="raw" default="" label="Before closing BODY tag;" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the BODY tag" />
+				<field name="css" type="textarea" label="Enter some CSS" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add CSS here that will be added to the head section of the rendered page. Do not put &amp;lt;style&amp;gt; tags in, just add the actual CSS!" />
+				<field name="cssExternal" type="textarea" label="External CSS sources" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add external CSS sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
+				<field name="javascript" type="textarea" label="Enter Javascript code" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add Javascript here that will be added to the head section of the the rendered page. Do not put &amp;lt;script&amp;gt; tags in, just add the actual JS code!" />
+				<field name="javascriptExternal" type="textarea" label="External JS sources" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add external Javascript sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
+				<field name="bodyStart" type="textarea" label="After opening BODY tag" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the BODY tag" />
+				<field name="bodyEnd" type="textarea" label="Before closing BODY tag" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the BODY tag" />
 			</fieldset>
 			
 			
 			<fieldset name="PLG_SWISS_AFTER_LOGIN_FIELDSET_LABEL">
-				<field name="oneClickLogoutEnabled" type="radio" default="0" label="Enable 1 click logout" description="When enabled logged in users can click the logout button without needing to confirm their action. This also means that you can create one click logout links, eg.&lt;br /&gt;index.php?option=com_users&amp;task=user.logout.">
+				<field name="oneClickLogoutEnabled" type="radio" label="Enable 1 click logout" default="0" description="When enabled logged in users can click the logout button without needing to confirm their action. This also means that you can create one click logout links, eg.&lt;br /&gt;index.php?option=com_users&amp;task=user.logout.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
 				
 				<field type="spacer" name="s8" hr="true" />
 				
-				<field name="afterLoginSystemMessageEnabled" type="radio" default="0" label="System message after login" description="When enabled the user will see the message below after logging in.">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
-				</field>
-				<field name="afterLoginSystemMessage" type="textarea" rows="2" cols="40" default="" label="Login message" description="A message to display to users to after a successful login (System message after login must be enabled!)" />
-				<field name="afterLoginSystemMessageType" type="radio" default="message" label="Message type" description="Choose whether your message is marked as a message, a warning or an error (different styles will be applied by the template).">
+				<field name="afterLoginSystemMessageEnabled" type="radio" label="System message after login" default="0" description="When enabled the user will see the message below after logging in. Choose whether your message is marked as a message, a warning or an error (different styles will be applied by the template).">
+					<option value="0">None</option>
 					<option value="message">Message</option>
 					<option value="warning">Warning</option>
 					<option value="error">Error</option>
+					<!--<option value="1">Yes</option>-->
 				</field>
+				<field name="afterLoginSystemMessage" type="textarea" rows="2" cols="40" default="" label="Login message" description="A message to display to users to after a successful login (System message after login must be enabled!)" />
+				<!--<field name="afterLoginSystemMessageType" type="radio" default="message" label="Message type" description="Choose whether your message is marked as a message, a warning or an error (different styles will be applied by the template).">
+					<option value="message">Message</option>
+					<option value="warning">Warning</option>
+					<option value="error">Error</option>
+				</field>-->
 				
 				<field type="spacer" name="s2" hr="true" />
 				
@@ -130,26 +115,6 @@
 				
 				<field type="spacer" name="s7" hr="true" />
 				
-				<field name="enableKeepAliveAllPages" type="radio" default="0" label="Enable session keep alive" description="When enabled you can specify which user groups will be able to stay logged in even after long periods of page inactivity. The plugin will add a small javascript snippet that will invisibly open a page via AJAX before the user is logged out in order to maintain the session.">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
-				</field>
-				<field name="keepaliveUsergroup" type="usergroup" default="" label="Group/s to keep alive"  size="10" description="Select which usergroup/s to apply the keep alive session to. " multiple="true" />
-				
-				<field type="spacer" name="s4" hr="true" />
-				
-				<field name="enableSessionEndAlert" type="radio" default="0" label="Enable session ending alert" description="When enabled you can specify which user groups will be alerted before their session times out. Users within the selected usergroup will be alerted 2 minutes before session end and offered choices allowing them to choose to stay logged in or allow the session to end.">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
-				</field>
-				<field name="sessionEndAlertType" type="radio" default="modal" label="Alert type" description="Choose how your users will be alerted when the session is nearing expiry.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;Modal&lt;/b&gt; provides a modal window popup which looks nicer. &lt;br /&gt;&lt;b&gt;Alert&lt;/b&gt; gives a Javascript alert which will pull user focus back to the window.&lt;br /&gt;&lt;br /&gt;Both options offer users the choice to refresh the session or allow it to expire.">
-					<option value="modal">Modal window</option>
-					<option value="alert">Javascript alert</option>
-				</field>
-				<field name="sessionEndAlertUsergroup" type="usergroup" default="" label="Group/s to alert about session ending"  size="10" description="Select which usergroup/s to apply the session end alert to. " multiple="true" />
-				
-				<field type="spacer" name="s13" hr="true" />
-				
 				<field name="failedLoginRedirectEnabled" type="radio" default="0" label="Enable failed login handling" description="When enabled you can create a custom system message for failed login attempts and optionally force a delay before a retry is permitted.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -164,6 +129,37 @@
 				<!--<field name="failedLoginRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Failed login redirect URL" description="A URL to redirect users to after a failed login (leave empty to disable)" />-->
 				<field name="failedLoginRedirectUrl" type="menuitem" default="" label="Failed login redirect page" description="A page to redirect users to after a failed login." />
 				<field name="failedLoginDelay" type="text" default="0" label="Retry delay" description="Enter just a number which will be the number of seconds that the system will delay subsequent login attempts by (set it to zero to disable)" />
+			</fieldset>
+			
+				
+			<fieldset name="PLG_SWISS_SESSION_MANAGER_LABEL" addfieldpath="plugins/system/swiss/fields">
+				<field name="enableKeepAliveAllPages" type="radio" default="0" label="Enable session keep alive" description="When enabled you can specify which user groups will be able to stay logged in even after long periods of page inactivity. The plugin will add a small javascript snippet that will invisibly open a page via AJAX before the user is logged out in order to maintain the session.&lt;br /&gt;&lt;b&gt;NB:&lt;/b&gt; Joomla automatically addes a keepAlive script to any pages that have a login module, so even with this feature disabled in the plugin you may find some of your pages display keepAlive behaviour!">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="keepaliveUsergroup" type="usergroup" default="" label="Group/s to keep alive"  size="10" description="Select which usergroup/s to apply the keep alive session to. " multiple="true" />
+				
+				<field type="spacer" name="s4" hr="true" />
+				
+				<field name="enableSessionEndAlert" type="radio" default="0" label="Session end warning" description="When enabled you can specify which user groups will be alerted before their session times out. Users within the selected usergroup will be alerted before session end and offered choices allowing them to choose to refresh the session or allow it to end.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;Modal&lt;/b&gt; provides a modal window popup which is a bit prettier and has more configurable options (below). &lt;br /&gt;&lt;b&gt;Alert&lt;/b&gt; gives a Javascript alert which has the added bonus that on most systems it will pull user focus back to the window.&lt;br /&gt;&lt;br /&gt;Both options offer users the choice to refresh the session or allow it to expire.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;NB:&lt;/b&gt; Joomla automatically adds a keepAlive script to any pages that have a login module, and if you have enabled keepAlive in this plugin it would be pointless to alert the user if the session is ending (as it will not end!) so in those circumstances the alert will not be sent.">
+					<option value="0">Off</option>
+					<option value="modal">Modal</option>
+					<option value="alert">JS Alert</option>
+				</field>
+				<field name="sessionEndTestMode" type="radio" default="0" label="Activate test mode" description="When enabled you will receive the session end alert after 5 seconds and the logged out message 10 seconds later (though you will not be logged out until the session really ends). This could help you tweak styles etc. a bit faster than waiting for an actual session to timeout!">
+					<option value="0">Off</option>
+					<option value="1">On</option>
+				</field>
+				<!--<field name="sessionEndAlertType" type="radio" default="modal" label="Alert type" description="Choose how your users will be alerted when the session is nearing expiry.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;Modal&lt;/b&gt; provides a modal window popup which looks nicer. &lt;br /&gt;&lt;b&gt;Alert&lt;/b&gt; gives a Javascript alert which will pull user focus back to the window.&lt;br /&gt;&lt;br /&gt;Both options offer users the choice to refresh the session or allow it to expire.">
+					<option value="modal">Modal window</option>
+					<option value="alert">Javascript alert</option>
+				</field>-->
+                <field name="sessionEndStartTime" type="text" label="Alert time (seconds)" size="20" default="120" description="The amount of time (in seconds) before the session ends that you wish to alert users. Your total session time is set in your Joomla config, so if that is set to 15 and you enter 180 here the alert will pop up after 12 minutes of inactivity." />
+				<field name="sessionEndAlertUsergroup" type="usergroup" label="Group/s to warn" default="" size="10" description="Select which usergroup/s to apply the session end alert to. " multiple="true" />
+				<field name="sessionEndAlertModalText" type="textarea" label="Modal alert message" rows="4" cols="40" filter="raw" default="&lt;p class=&quot;sessionEndWarningText&quot;&gt;Your user session has been inactive and you will be logged out automatically in {countdown}&lt;/p&gt;" description="A message that will appear in the modal box (if selected) before the session ends. Use a placeholder {countdown} to show a m:ss countdown timer. You can use HTML here." />
+				<field name="sessionEndAlertModalSize" type="widthheight" label="Modal warning size" default="400x150" size="4" description="The width and height of the modal alert box that tells users that their session will soon be ending." />
+				<field name="sessionEndedModalText" type="textarea" label="Modal session end message" rows="4" cols="40" filter="raw" default="&lt;p class=&quot;sessionEndExpiredText&quot;&gt;Your session has ended. You will have to log in again to continue.&lt;/p&gt;" description="A message that will appear in the modal box (if selected) after the session ends. You can use HTML here." />
+				<field name="sessionEndedModalSize" type="widthheight" label="Modal ended size" default="200x100" size="4" description="The width and height of the modal alert box that tells users that their session has ended." />
 			</fieldset>
 			
 			
@@ -215,7 +211,7 @@
 
 
 			<fieldset name="PLG_SWISS_EXPERIMENTAL_FIELDSET_LABEL">
-				<field type="spacer" name="s11" label="You should not use these unless you are prepared to do some coding! These are experimental works in progress!" />
+				<field type="spacer" name="s11" label="&lt;span style='padding:5px;background:red;color:white;'&gt;You should not use these unless you are prepared to do some coding! These are experimental works in progress (WIP)!&lt;/span&gt;" />
 				<field type="spacer" name="s12" hr="true" />
 				<field name="autoLoginEnabled" type="radio" default="0" label="&lt;span style='font-weight:bold;color:red;'&gt;[WIP]&lt;/span&gt; Enable registration autologin" description="NB: THIS IS EXPERIMENTAL!&lt;br /&gt;When enabled this will automatically log newly registered user in. Note that it will only work if the registration setting is NONE in UserManager->Options->NewUserAccountActivation=NONE - otherwise the account is blocked and it will create a login failure.">
 					<option value="0">No</option>
@@ -245,6 +241,15 @@
 				<field name="memory" type="radio" default="1" label="Show Memory Usage" description="Display the total memory usage.">
 					<option value="1">Yes</option>
 					<option value="0">No</option>
+				</field>
+			</fieldset>
+
+
+			<fieldset name="PLG_SWISS_ENABLE_ADMIN_LINK_IN_BACKEND_FIELDSET_LABEL">
+			<!-- <fieldset name="COM_PLUGINS_PLG_SWISS_GENERATOR_TAG_REPLACEMENT_FIELDSET_LABEL_FIELDSET_LABEL"> -->
+				<field name="enableAdminLink" type="radio" default="1" label="Enable admin link" description="When enabled the admin icon/link in the top left of the Isis administrator template will never be disabled.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
 				</field>
 			</fieldset>
 		</fields>
