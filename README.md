@@ -17,6 +17,7 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 
 * **Generator metatag fixer:** I dislike that Joomla! adds its own generator metatag. With this you can removeit or set your own choice of names in the tag.
 
+* **Take site offline:** Using this you can take your site offline to the public by either entering a redirect URL or entering HTML that you would like to sisplay instead of your website. You can whitelist IP address/es to allow access for anybody that you want to have access to the website while it's offline
 
 ## Changelog
 **2014-10-07**  
@@ -25,3 +26,5 @@ Initial draft version
 Code tidying
 Adds custom home page for registered users
 Adds Generator metatag fixer
+**2014-12-09**  
+Adds offline mode function

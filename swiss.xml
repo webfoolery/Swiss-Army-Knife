@@ -7,7 +7,7 @@
 	<license>GNU General Public License</license>
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
-	<version>1.0</version>
+	<version>1.2</version>
 	<updateservers>
 		<server type="extension" name="Swiss Army Knife" priority="1">http://webfoolery.com/downloads/joomla/update_plgSysSwiss_J2.5.xml</server>
 	</updateservers>
@@ -25,6 +25,7 @@
 					<li>Custom home page for registered users</li>
 					<li>Insert HTML/JS/CSS incl. external JS sources to head or body</li>
 					<li>Failed login redirect, message & delay</li>
+					<li>Take site offline, redirect to URL or display custom HTML</li>
 				</ul>
 			</div>
 		]]>
@@ -41,6 +42,18 @@
 			</fieldset>
 
 
+			<fieldset name="PLG_SWISS_SITE_OFFLINE_LABEL">
+				<field name="siteOfflineEnabled" type="radio" default="0" label="Take site offline" description="When enabled visitors to the site will be redirected or shown the HTML below. You can specify IP addresses that will be allowed normal access to the site.">
+					<option value="0">No</option>
+					<option value="redirect">Yes, by redirect</option>
+					<option value="html">Yes, show HTML</option>
+				</field>
+				<field name="allowedIpAddresses" type="textarea" rows="4" cols="40" default="" label="Allowed IPs" description="When the site is offline you can restore normal access to specified IP addresses. Enter each IP address on a new line, eg:&lt;br /&gt;12.122.243.12&lt;br /&gt;216.79.56.167" />
+                <field name="offlineRedirectUrl" type="text" size="50" default="" label="Redirect URL" description="When the site is offline you can redirect visitors to any URL. Enter the full URL here, eg. http://mysite.com/offline.html" />
+				<field name="offlineHTML" type="textarea" rows="4" cols="40" filter="raw" default="" label="HTML" description="If you take the site offline you can add your own HTML here that will be displayed instead of the normal website." />
+			</fieldset>
+
+
 			<fieldset name="PLG_SWISS_GENERATOR_TAG_REPLACEMENT_FIELDSET_LABEL">
 				<field name="generatorTagEnabled" type="radio" default="1" label="Enable tag change" description="When enabled this will allow you to edit or remove the generator metatag.">
 					<option value="0">No</option>
@@ -51,7 +64,7 @@
 
 
 			<fieldset name="PLG_SWISS_CONTENT_REPLACEMENT_FIELDSET_LABEL">
-				<field name="replaceAnywhereEnabled" type="radio" default="1" label="Enable replaceAnywhere" description="When enabled this will allow use of variables in braces within the site content in articles, modules, plugins etc.&lt;br /&gt;Some variables are set up already:&lt;br /&gt; - {swiss.name}&lt;br /&gt; - {swiss.username}&lt;br /&gt; - {swiss.email}&lt;br /&gt; - {swiss.lastvisitdate}&lt;br /&gt; - {swiss.today.dd/mm/yyyy}&lt;br /&gt; - {swiss.today.day}&lt;br /&gt; - {swiss.today.date}&lt;br /&gt; - {swiss.today.month}&lt;br /&gt; - {swiss.today.year}">
+				<field name="replaceAnywhereEnabled" type="radio" default="0" label="Enable replaceAnywhere" description="When enabled this will allow use of variables in braces within the site content in articles, modules, plugins etc.&lt;br /&gt;Some variables are set up already:&lt;br /&gt; - {swiss.name}&lt;br /&gt; - {swiss.username}&lt;br /&gt; - {swiss.email}&lt;br /&gt; - {swiss.lastvisitdate}&lt;br /&gt; - {swiss.today.dd/mm/yyyy}&lt;br /&gt; - {swiss.today.day}&lt;br /&gt; - {swiss.today.date}&lt;br /&gt; - {swiss.today.month}&lt;br /&gt; - {swiss.today.year}">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
@@ -65,7 +78,7 @@
 					<option value="1">Yes</option>
 				</field>
 				<field name="css" type="textarea" rows="4" cols="40" filter="raw" default="" label="Enter some CSS" description="If you have enabled code insertion you can add CSS here that will be added to the head section of the rendered page" />
-				<field name="javascriptExternal" type="textarea" rows="4" cols="40" filter="raw" default="" label="External JS sources" description="If you have enabled code insertion you can add external Javascript sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs. Separate multiple sources with three dashes ---" />
+				<field name="javascriptExternal" type="textarea" rows="4" cols="40" filter="raw" default="" label="External JS sources" description="If you have enabled code insertion you can add external Javascript sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
 				<field name="javascript" type="textarea" rows="4" cols="40" filter="raw" default="" label="Enter Javascript code" description="If you have enabled code insertion you can add Javascript here that will be added to the head section of the the rendered page" />
 				<field name="bodyStart" type="textarea" rows="4" cols="40" filter="raw" default="" label="After opening BODY tag" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the BODY tag" />
 				<field name="bodyEnd" type="textarea" rows="4" cols="40" filter="raw" default="" label="Before closing BODY tag;" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the BODY tag" />
@@ -129,7 +142,7 @@
 			
 			
 			<fieldset name="PLG_SWISS_COOKIE_DIRECTIVE_FIELDSET_LABEL">
-				<field name="cookieDirectiveEnabled" type="radio" default="1" label="Enable cookie alert" description="When enabled this will display info relating to the EU Cookie Directive, namely alerting users of the site that you use cookies. Once they accept the message will be gone from the screen.">
+				<field name="cookieDirectiveEnabled" type="radio" default="0" label="Enable cookie alert" description="When enabled this will display info relating to the EU Cookie Directive, namely alerting users of the site that you use cookies. Once they accept the message will be gone from the screen.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>

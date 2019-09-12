@@ -9,14 +9,13 @@ jimport( 'joomla.plugin.plugin' );
 // TODO:: IP BASED DEBUG OUTPUT
 // TODO:: IP BASED VISITOR BLACKLIST
 // TODO:: MASTER USER LOGIN --> CAN'T BE DONE IN plgSystem AS onUserAuthenticate WON'T TRIGGER UNLESS IN AN AUTHENTICATION PLUGIN...
-// TODO:: TAKE SITE OFFLINE, OFFER IP ACCESS AND REDIRECT AND HTML ENTRY
 
 class plgSystemSwiss extends JPlugin {
 	
 	public function __construct( &$subject, $config ) {
 		parent::__construct( $subject, $config );
 		// Do some extra initialisation in this constructor if required
-        $lang = & JFactory::getLanguage();
+        $lang = JFactory::getLanguage();
         $lang->load('plg_system_swiss', JPATH_ADMINISTRATOR);
 	}
 
@@ -41,6 +40,22 @@ class plgSystemSwiss extends JPlugin {
 		$app = JFactory::getApplication();
 		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
 		$user = JFactory::getUser();
+		$siteOffline = $this->params->get('siteOfflineEnabled', 0);
+		if ($siteOffline != '0' && strpos($this->params->get('allowedIpAddresses'), $_SERVER['REMOTE_ADDR']) === false) $this->siteOffline($siteOffline);
+	}
+	
+	function siteOffline($offlineMethod) {
+		if ($offlineMethod == 'html') {
+			echo $this->params->get('offlineHTML', 'Site offline. Please try later.');
+		}
+		if ($offlineMethod == 'redirect') {
+			$redirectUrl = $this->params->get('offlineRedirectUrl');
+			$app = JFactory::getApplication();
+			$app->redirect($redirectUrl);
+			// return;
+			// header('Location: '.$redirectUrl);
+		}
+		exit();
 	}
 
  	function onAfterRoute() {
@@ -134,7 +149,9 @@ class plgSystemSwiss extends JPlugin {
 			if (strlen($insertCss)) $doc->addStyleDeclaration ($insertCss);
 			if (strlen($insertJavascript)) $doc->addScriptDeclaration ($insertJavascript);
 			if (strlen($insertJavascriptExternal)) {
-				$sources = explode('---', $insertJavascriptExternal);
+				// $sources = explode('---', $insertJavascriptExternal);
+				$sources = explode("\r\n", $insertJavascriptExternal);
+				// echo '<pre>';print_r($sources);echo'</pre>';exit;
 				foreach ($sources as $source) $doc->addScript ($source);
 			}
 		}
