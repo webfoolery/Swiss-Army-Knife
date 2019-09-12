@@ -7,7 +7,7 @@
 	<license>GNU General Public License</license>
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
-	<version>1.2</version>
+	<version>1.4</version>
 	<updateservers>
 		<server type="extension" name="Swiss Army Knife" priority="1">http://webfoolery.com/downloads/joomla/update_plgSysSwiss_J2.5.xml</server>
 	</updateservers>
@@ -18,16 +18,17 @@
 				<ul>
 					<li>Replace content anywhere</li>
 					<li>EU Cookie Directive alert</li>
-					<li>Auto login after registration</li>
-					<li>Redirect user after login or logout based on usergroup</li>
+					<li>Usergroup based redirect after login or logout</li>
 					<li>System message after login</li>
 					<li>Generator metatag fixer</li>
-					<li>Custom home page for registered users</li>
-					<li>Insert HTML/JS/CSS incl. external JS sources to head or body</li>
+					<li>custom home pages</li>
+					<li>Insert HTML/JS/CSS incl. external CSS/JS sources to head or body</li>
 					<li>Failed login redirect, message & delay</li>
 					<li>Take site offline, redirect to URL or display custom HTML</li>
+					<!--<li>Auto login after registration</li>-->
 				</ul>
 			</div>
+			<style>h3#PLG_SWISS_EXPERIMENTAL_FIELDSET_LABEL-options a span{color:#bbb;}</style>
 		]]>
 	</description>
 	<files>
@@ -78,19 +79,22 @@
 					<option value="1">Yes</option>
 				</field>
 				<field name="css" type="textarea" rows="4" cols="40" filter="raw" default="" label="Enter some CSS" description="If you have enabled code insertion you can add CSS here that will be added to the head section of the rendered page" />
-				<field name="javascriptExternal" type="textarea" rows="4" cols="40" filter="raw" default="" label="External JS sources" description="If you have enabled code insertion you can add external Javascript sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
+				<field name="cssExternal" type="textarea" rows="4" cols="40" filter="raw" default="" label="External CSS sources" description="If you have enabled code insertion you can add external CSS sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
 				<field name="javascript" type="textarea" rows="4" cols="40" filter="raw" default="" label="Enter Javascript code" description="If you have enabled code insertion you can add Javascript here that will be added to the head section of the the rendered page" />
+				<field name="javascriptExternal" type="textarea" rows="4" cols="40" filter="raw" default="" label="External JS sources" description="If you have enabled code insertion you can add external Javascript sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
 				<field name="bodyStart" type="textarea" rows="4" cols="40" filter="raw" default="" label="After opening BODY tag" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the BODY tag" />
 				<field name="bodyEnd" type="textarea" rows="4" cols="40" filter="raw" default="" label="Before closing BODY tag;" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the BODY tag" />
 			</fieldset>
 			
 			
 			<fieldset name="PLG_SWISS_AFTER_LOGIN_FIELDSET_LABEL">
-				<field name="autoLoginEnabled" type="radio" default="0" label="&lt;span style='font-weight:bold;color:red;'&gt;[WIP]&lt;/span&gt; Enable registration autologin" description="NB: THIS IS EXPERIMENTAL!&lt;br /&gt;When enabled this will automatically log newly registered user in. Note that it will only work if the registration setting is NONE in UserManager->Options->NewUserAccountActivation=NONE - otherwise the account is blocked and it will create a login failure.">
+				<field name="oneClickLogoutEnabled" type="radio" default="0" label="Enable 1 click logout" description="When enabled logged in users can click the logout button without needing to confirm their action. This also means that you can create one click logout links, eg.&lt;br /&gt;index.php?option=com_users&amp;task=user.logout.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field type="spacer" name="s1" hr="true" />
+				
+				<field type="spacer" name="s8" hr="true" />
+				
 				<field name="afterLoginSystemMessageEnabled" type="radio" default="0" label="System message after login" description="When enabled the user will see the message below after logging in.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -101,21 +105,29 @@
 					<option value="warning">Warning</option>
 					<option value="error">Error</option>
 				</field>
+				
 				<field type="spacer" name="s2" hr="true" />
+				
 				<field name="afterLoginRedirectEnabled" type="radio" default="0" label="Enable login redirect" description="When enabled you can redirect users after logging in by modifying the settings below.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="afterLoginRedirectUsergroup" type="usergroup" label="Group to redirect on login"  size="10" description="Select which usergroup/s to redirect  on login. " multiple="true" />
-				<field name="afterLoginRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Login redirect URL" description="A URL to redirect users to after a successful login (leave empty to disable)" />
+				<field name="afterLoginRedirectUsergroup" type="usergroup" label="Group/s to redirect on login"  size="10" description="Select which usergroup/s to redirect  on login. " multiple="true" />
+				<!--<field name="afterLoginRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Login redirect URL" description="A URL to redirect users to after a successful login (leave empty to disable)" />-->
+				<field name="afterLoginRedirectUrl" type="menuitem" default="" label="Login redirect page" description="A page to redirect users from the selected group/s to after a successful login." />
+				
 				<field type="spacer" name="s3" hr="true" />
-				<field name="afterLogOutRedirectEnabled" type="radio" default="0" label="Enable logout redirect" description="When enabled you can redirect users after logging out by modifying the settings below.">
+				
+				<field name="afterLogOutRedirectEnabled" type="radio" default="0" label="Enable logout redirect" description="When enabled you can redirect users after logging out by modifying the settings below.&lt;br /&gt;NB: A side effect of this is that it also enables the one click logout, so you can create links like:&lt;br /&gt;index.php?option=com_users&amp;task=user.logout.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="afterLogOutRedirectUsergroup" type="usergroup" default="2" label="Group to redirect on logout"  size="10" description="Select which usergroup/s to redirect on log out. " multiple="true" />
-				<field name="afterLogOutRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Logout redirect URL" description="A URL to redirect users to after logout (leave empty to disable)" />
+				<field name="afterLogOutRedirectUsergroup" type="usergroup" default="2" label="Group/s to redirect on logout"  size="10" description="Select which usergroup/s to redirect on log out. " multiple="true" />
+				<!--<field name="afterLogOutRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Logout redirect URL" description="A URL to redirect users to after logout (leave empty to disable)" />-->
+				<field name="afterLogOutRedirectUrl" type="menuitem" default="" label="Logout redirect page" description="A page to redirect users to after logout." />
+				
 				<field type="spacer" name="s4" hr="true" />
+				
 				<field name="failedLoginRedirectEnabled" type="radio" default="0" label="Enable failed login handling" description="When enabled you can create a custom system message for failed login attempts and optionally force a delay before a retry is permitted.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -127,7 +139,8 @@
 					<option value="error">Error</option>
 				</field>
 				<!--<field name="failedLoginHideSystemMessage" type="text" size="40" default="Username and password do not match" label="Hide default message" description="if you enter a part of the string of the default failed login message here the default message will be removed from th the message queue (leave empty to disable)" />-->
-				<field name="failedLoginRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Failed login redirect URL" description="A URL to redirect users to after a failed login (leave empty to disable)" />
+				<!--<field name="failedLoginRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Failed login redirect URL" description="A URL to redirect users to after a failed login (leave empty to disable)" />-->
+				<field name="failedLoginRedirectUrl" type="menuitem" default="" label="Failed login redirect page" description="A page to redirect users to after a failed login." />
 				<field name="failedLoginDelay" type="text" default="0" label="Retry delay" description="Enter just a number which will be the number of seconds that the system will delay subsequent login attempts by (set it to zero to disable)" />
 			</fieldset>
 			
@@ -137,7 +150,18 @@
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="registeredUserHomeUrl" type="menuitem" default="" label="New homepage" description="The menu item you select will become the home page for any registered users." />
+				<field name="registeredUserHomeGroup1" type="usergroup" default="2" label="Group/s"  size="10" description="Select the usergroup/s whose home page you will set below. " multiple="true" />
+				<field name="registeredUserHomeUrl1" type="menuitem" default="" label="New homepage" description="The menu item you select will become the home page for any registered users selected in the group above." />
+				
+				<field type="spacer" name="s9" hr="true" />
+				
+				<field name="registeredUserHomeGroup2" type="usergroup" default="2" label="Group/s"  size="10" description="Select the usergroup/s whose home page you will set below. " multiple="true" />
+				<field name="registeredUserHomeUrl2" type="menuitem" default="" label="New homepage" description="The menu item you select will become the home page for any registered users selected in the group above." />
+				
+				<field type="spacer" name="s10" hr="true" />
+				
+				<field name="registeredUserHomeGroup3" type="usergroup" default="2" label="Group/s"  size="10" description="Select the usergroup/s whose home page you will set below. " multiple="true" />
+				<field name="registeredUserHomeUrl3" type="menuitem" default="" label="New homepage" description="The menu item you select will become the home page for any registered users selected in the group above." />
 			</fieldset>
 			
 			
@@ -168,12 +192,21 @@
 			</fieldset>
 
 
-			<fieldset name="PLG_SWISS_DEBUG_OUTPUT_FIELDSET_LABEL">
+			<fieldset name="PLG_SWISS_EXPERIMENTAL_FIELDSET_LABEL">
+				<field type="spacer" name="s11" label="You should not use these unless you are prepared to do some coding! These are experimental works in progress!" />
+				<field type="spacer" name="s12" hr="true" />
+				<field name="autoLoginEnabled" type="radio" default="0" label="&lt;span style='font-weight:bold;color:red;'&gt;[WIP]&lt;/span&gt; Enable registration autologin" description="NB: THIS IS EXPERIMENTAL!&lt;br /&gt;When enabled this will automatically log newly registered user in. Note that it will only work if the registration setting is NONE in UserManager->Options->NewUserAccountActivation=NONE - otherwise the account is blocked and it will create a login failure.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				
+				<field type="spacer" name="s1" hr="true" />
+				
 				<field name="debugOutputEnabled" type="radio" default="0" label="&lt;span style='font-weight:bold;color:red;'&gt;[WIP]&lt;/span&gt; Enable debug output" description="NB: THIS IS EXPERIMENTAL!&lt;br /&gt;When enabled this will allow you show core Joomla! debug output, optionally restricted by IP address and/or user group.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="debugUsergroup" type="usergroup" label="Limit by usergroup" description="Limit debug output to specified user groups." multiple="true" size="10" />
+				<field name="debugUsergroup" type="usergroup" label="Limit by usergroup" description="Limit debug output to specified user group/s." multiple="true" size="10" />
 				<field name="debugIpAddress" type="text" default="" label="Limit by IP" description="Limit debug output to specified IP address."/>
 				<field name="profile" type="radio" default="1" label="Show Profiling" description="Display the profiling waypoints">
 					<option value="1">Yes</option>

@@ -4,11 +4,11 @@ jimport( 'joomla.plugin.plugin' );
 // require_once(JPATH_SITE.DS.'/components/com_swiss/swissHelper.php');
 
 // TODO:: onUserAfterSave AUTO LOGIN NOT WORKING (MAY NEED TO BE IN USER PLUGIN?)
-// TODO:: CUSTOM HOME PAGE BASED ON USER GROUP (ADMIN, REGISTERED ETC.)
 // TODO:: REQUIRE $_GET VARIABLE TO ACCESS ADMIN AREA
 // TODO:: IP BASED DEBUG OUTPUT
 // TODO:: IP BASED VISITOR BLACKLIST
 // TODO:: MASTER USER LOGIN --> CAN'T BE DONE IN plgSystem AS onUserAuthenticate WON'T TRIGGER UNLESS IN AN AUTHENTICATION PLUGIN...
+// TODO:: UNABLE TO SHOW SYSTEM MESSAGE AFTER LOGOUT. ONE CLICK SHOULD TELL PEOPLE THEY'RE LOGGED OUT
 
 class plgSystemSwiss extends JPlugin {
 	
@@ -33,8 +33,6 @@ class plgSystemSwiss extends JPlugin {
 
 	function onGetWebServices() {
 	}
-	
-/* 	function onUserLogout($credentials=array(), $options=array()) {} */
 
 	function onAfterInitialise() {
 		$app = JFactory::getApplication();
@@ -68,45 +66,66 @@ class plgSystemSwiss extends JPlugin {
 		if ($this->params->get('afterLoginRedirectEnabled', false) == 1) {
 			if ($jinput->get('option') == 'com_users' && $jinput->get('task') == 'user.login') {
 				$afterLoginRedirectUsergroup = (array)$this->params->get('afterLoginRedirectUsergroup', null);
-				$afterLoginRedirectUrl = $this->params->get('afterLoginRedirectUrl', false);
+				$afterLoginRedirectUrl = $this->params->get('afterLoginRedirectUrl', '');
+// echo 'index.php?Itemid='.$afterLoginRedirectUrl;exit;
 				// USER IS NOT YET LOGGED IN SO WE NEED TO CHECK GROUPS OURSELF...
 				$db = JFactory::getDbo();
 				$db->setQuery("SELECT id FROM #__users WHERE username = '".$jinput->get('username')."'");
 				if ($userId = $db->loadResult()) {
 					$notLoggedInUser = JFactory::getUser($userId);
 					if (array_intersect($afterLoginRedirectUsergroup, $notLoggedInUser->groups)) {
-						if (strlen($afterLoginRedirectUrl)) {
-							JRequest::setVar('return', urlencode(base64_encode($afterLoginRedirectUrl)));
-						}
+						JRequest::setVar('return', base64_encode('index.php?Itemid='.$afterLoginRedirectUrl));
 					}
 				}
 			}
 		}
 		
-		// PROCESS ANY LOGOUT REDIRECTING
-		if ($this->params->get('afterLogOutRedirectEnabled', false) == 1) {
-			if ($jinput->get('option') == 'com_users' && $jinput->get('task') == 'user.logout') {
+		if ($jinput->get('option') == 'com_users' && ($jinput->get('task') == 'user.logout' || (!$user->guest && $jinput->get('view') == 'login'))) {
+			// CHECK ANY LOGOUT REDIRECTING
+			if ($this->params->get('afterLogOutRedirectEnabled', false) == 1) {
 				$afterLogOutRedirectUsergroup = (array)$this->params->get('afterLogOutRedirectUsergroup', null);
-				$afterLogOutRedirectUrl = $this->params->get('afterLogOutRedirectUrl', false);
-				if (array_intersect($afterLogOutRedirectUsergroup, $user->groups)) {
+				$afterLogOutRedirectUrl = $this->params->get('afterLogOutRedirectUrl', 'index.php?option=com_users&view=login');
+				if (array_intersect($afterLogOutRedirectUsergroup, $user->groups) && strlen($afterLogOutRedirectUrl)) {
 					// USER IS IN AT LEAST 1 OF THE SPECIFIED GROUPS
-					if (strlen($afterLogOutRedirectUrl)) {
-						$app->logout($user->id); // OTHERWISE THEY'LL STAY LOGGED IN!
-						$app->redirect($afterLogOutRedirectUrl);
+					if ($this->params->get('oneClickLogoutEnabled', false) != 1) {
+						$app->logout($user->id); // LOG THE USER OUT
+						// $app->redirect($afterLogOutRedirectUrl);
+						$app->redirect(JRoute::_('index.php?Itemid='.$afterLogOutRedirectUrl, false));
 					}
+					else $return = $afterLogOutRedirectUrl;
 				}
 			}
+			// CHECK TO SEE IF ONE-CLICK LOGOUT IS ENABLED
+			if ($this->params->get('oneClickLogoutEnabled', false) == 1) {
+				$error = $app->logout();
+				if (!($error instanceof Exception)) {
+					if (!isset($return)) {
+						$return = JRequest::getVar('return', '', 'method', 'base64');
+						$return = base64_decode($return);
+						if (!JURI::isInternal($return)) $return = '';
+					}
+					else $return = 'index.php?Itemid='.$return;
+					$app->redirect(JRoute::_($return, false));
+				}
+				else $app->redirect(JRoute::_('index.php?option=com_users&view=login', false));
+			}
 		}
+		
 		
 		// REDIRECT HOME PAGE FOR REGISTERED USERS
 		if ($this->params->get('registeredUserHomepageEnabled', false) == 1) {
 			$task = JRequest::getVar('task', false);
 			if ($user->guest || $task=='user.logout') return;
+			$registeredUserHomeGroup1 = $this->params->get('registeredUserHomeGroup1', false);
+			$registeredUserHomeGroup2 = $this->params->get('registeredUserHomeGroup2', false);
+			$registeredUserHomeGroup3 = $this->params->get('registeredUserHomeGroup3', false);
 			$menu = $app->getMenu();
 			$currentMenuItem = $menu->getActive();
 			$defaultHomePage = $menu->getDefault();
 			if($currentMenuItem == $defaultHomePage){
-				$app->redirect(JRoute::_("index.php?Itemid=".$this->params->get('registeredUserHomeUrl', $defaultHomepPage),false));
+				if (array_intersect($registeredUserHomeGroup1, $user->groups)) $app->redirect(JRoute::_("index.php?Itemid=".$this->params->get('registeredUserHomeUrl1', $defaultHomePage),false));
+				if (array_intersect($registeredUserHomeGroup2, $user->groups)) $app->redirect(JRoute::_("index.php?Itemid=".$this->params->get('registeredUserHomeUrl2', $defaultHomePage),false));
+				if (array_intersect($registeredUserHomeGroup3, $user->groups)) $app->redirect(JRoute::_("index.php?Itemid=".$this->params->get('registeredUserHomeUrl3', $defaultHomePage),false));
 			}
 		}
 		return true;
@@ -144,15 +163,18 @@ class plgSystemSwiss extends JPlugin {
 		// INSERT ANY REQUESTED JAVASCRIPT
 		if ($this->params->get('insertCodeEnabled', false) == 1) {
 			$insertCss = $this->params->get('css', '');
+			$insertCssExternal = $this->params->get('cssExternal', '');
 			$insertJavascript = $this->params->get('javascript', '');
 			$insertJavascriptExternal = $this->params->get('javascriptExternal', '');
 			if (strlen($insertCss)) $doc->addStyleDeclaration ($insertCss);
 			if (strlen($insertJavascript)) $doc->addScriptDeclaration ($insertJavascript);
 			if (strlen($insertJavascriptExternal)) {
-				// $sources = explode('---', $insertJavascriptExternal);
 				$sources = explode("\r\n", $insertJavascriptExternal);
-				// echo '<pre>';print_r($sources);echo'</pre>';exit;
 				foreach ($sources as $source) $doc->addScript ($source);
+			}
+			if (strlen($insertCssExternal)) {
+				$sources = explode("\r\n", $insertCssExternal);
+				foreach ($sources as $source) $doc->addStyleSheet ($source);
 			}
 		}
 		
@@ -207,9 +229,15 @@ class plgSystemSwiss extends JPlugin {
 		}
 	}
 	
-	function onUserAfterLogin($options = array()) {
-		// exit('onUserAfterLogin triggered!'); // THIS DOESN'T SEEM TO EXIST!
-	}
+ 	// public function onUserLogout($credentials=array(), $options=array()) {
+		// FIRES BEFORE LOGOUT PROCESS
+		// exit('onUserLogout triggered!');
+	// }
+	
+	// function onUserAfterLogin($options = array()) {
+		// THIS DOESN'T SEEM TO EXIST!
+		// exit('onUserAfterLogin triggered!');
+	// }
 
 	function onUserLoginFailure() {
 		$app = JFactory::getApplication();
@@ -228,8 +256,10 @@ class plgSystemSwiss extends JPlugin {
 				$app->enqueueMessage($failedLoginSystemMessage, $failedLoginSystemMessageType);
 			}
 			if (strlen($failedLoginRedirectUrl)) {
-				if (strlen($failedLoginSystemMessage)) $app->redirect($failedLoginRedirectUrl, $failedLoginSystemMessage, $failedLoginSystemMessageType);
-				else $app->redirect($failedLoginRedirectUrl);
+				// if (strlen($failedLoginSystemMessage)) $app->redirect($failedLoginRedirectUrl, $failedLoginSystemMessage, $failedLoginSystemMessageType);
+				if (strlen($failedLoginSystemMessage)) $app->redirect(JRoute::_('index.php?Itemid='.$failedLoginRedirectUrl, false), $failedLoginSystemMessage, $failedLoginSystemMessageType);
+				// else $app->redirect($failedLoginRedirectUrl);
+				else $app->redirect(JRoute::_('index.php?Itemid='.$failedLoginRedirectUrl, false));
 			}
 		}
 		return true;
