@@ -7,7 +7,7 @@
 	<license>GNU General Public License</license>
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
-	<version>1.4</version>
+	<version>1.5</version>
 	<updateservers>
 		<server type="extension" name="Swiss Army Knife" priority="1">http://webfoolery.com/downloads/joomla/update_plgSysSwiss_J2.5.xml</server>
 	</updateservers>
@@ -25,6 +25,8 @@
 					<li>Insert HTML/JS/CSS incl. external CSS/JS sources to head or body</li>
 					<li>Failed login redirect, message & delay</li>
 					<li>Take site offline, redirect to URL or display custom HTML</li>
+					<li>Enable usergroup based session keepalive</li>
+					<li>Enable usergroup based session inactivity/expiry alert</li>
 					<!--<li>Auto login after registration</li>-->
 				</ul>
 			</div>
@@ -126,7 +128,27 @@
 				<!--<field name="afterLogOutRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Logout redirect URL" description="A URL to redirect users to after logout (leave empty to disable)" />-->
 				<field name="afterLogOutRedirectUrl" type="menuitem" default="" label="Logout redirect page" description="A page to redirect users to after logout." />
 				
+				<field type="spacer" name="s7" hr="true" />
+				
+				<field name="enableKeepAliveAllPages" type="radio" default="0" label="Enable session keep alive" description="When enabled you can specify which user groups will be able to stay logged in even after long periods of page inactivity. The plugin will add a small javascript snippet that will invisibly open a page via AJAX before the user is logged out in order to maintain the session.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="keepaliveUsergroup" type="usergroup" default="" label="Group/s to keep alive"  size="10" description="Select which usergroup/s to apply the keep alive session to. " multiple="true" />
+				
 				<field type="spacer" name="s4" hr="true" />
+				
+				<field name="enableSessionEndAlert" type="radio" default="0" label="Enable session ending alert" description="When enabled you can specify which user groups will be alerted before their session times out. Users within the selected usergroup will be alerted 2 minutes before session end and offered choices allowing them to choose to stay logged in or allow the session to end.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="sessionEndAlertType" type="radio" default="modal" label="Alert type" description="Choose how your users will be alerted when the session is nearing expiry.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;Modal&lt;/b&gt; provides a modal window popup which looks nicer. &lt;br /&gt;&lt;b&gt;Alert&lt;/b&gt; gives a Javascript alert which will pull user focus back to the window.&lt;br /&gt;&lt;br /&gt;Both options offer users the choice to refresh the session or allow it to expire.">
+					<option value="modal">Modal window</option>
+					<option value="alert">Javascript alert</option>
+				</field>
+				<field name="sessionEndAlertUsergroup" type="usergroup" default="" label="Group/s to alert about session ending"  size="10" description="Select which usergroup/s to apply the session end alert to. " multiple="true" />
+				
+				<field type="spacer" name="s13" hr="true" />
 				
 				<field name="failedLoginRedirectEnabled" type="radio" default="0" label="Enable failed login handling" description="When enabled you can create a custom system message for failed login attempts and optionally force a delay before a retry is permitted.">
 					<option value="0">No</option>
