@@ -13,7 +13,15 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 
 * **Login redirect:** Choose a page to redirect users to after a successful login.
 
+* **Custom home page for registered users:** Select a page from the menu structures to set as a default home page, even over-riding the Joomla! default home.
+
+* **Generator metatag fixer:** I dislike that Joomla! adds its own generator metatag. With this you can removeit or set your own choice of names in the tag.
+
 
 ## Changelog
 **2014-10-07**  
 Initial draft version
+**2014-12-08**  
+Code tidying
+Adds custom home page for registered users
+Adds Generator metatag fixer

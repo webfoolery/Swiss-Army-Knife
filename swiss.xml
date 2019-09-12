@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<install version="1.5" type="plugin" group="system">
-	<name>System - Swiss</name>
+<extension version="2.5" type="plugin" group="system">
+	<name>System - Swiss Army Knife</name>
 	<author>Chris Sheridan</author>
 	<creationDate>2014-08-21</creationDate>
 	<copyright>Copyright (C) 2104 webfoolery. All rights reserved.</copyright>
@@ -8,15 +8,26 @@
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
 	<version>1.0</version>
+	<updateservers>
+		<server type="extension" name="Swiss Army Knife" priority="1">http://webfoolery.com/downloads/joomla/update_plgSysSwiss_J2.5.xml</server>
+	</updateservers>
 	<description>
-		<![CDATA[ <p>A system plugin for managing stuff... Current tools include:</p>
-		<ul>
-			<li>Replace content anywhere</li>
-			<li>EU Cookie Directive alert</li>
-			<li>Auto login after registration</li>
-			<li>Redirect user after login</li>
-			<li>System message after login</li>
-		</ul>]]>
+		<![CDATA[
+			<div style="-webkit-box-shadow: 5px 5px 5px;-moz-box-shadow: 5px 5px 5px;box-shadow: 5px 5px 5px;border:1px solid #444;background-color:#eee;padding:10px;border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:10px;">
+				<p>A Swiss army knife system plugin for managing... stuff! Current tools include:</p>
+				<ul>
+					<li>Replace content anywhere</li>
+					<li>EU Cookie Directive alert</li>
+					<li>Auto login after registration</li>
+					<li>Redirect user after login or logout based on usergroup</li>
+					<li>System message after login</li>
+					<li>Generator metatag fixer</li>
+					<li>Custom home page for registered users</li>
+					<li>Insert HTML/JS/CSS incl. external JS sources to head or body</li>
+					<li>Failed login redirect, message & delay</li>
+				</ul>
+			</div>
+		]]>
 	</description>
 	<files>
 		<filename plugin="swiss">swiss.php</filename>
@@ -27,86 +38,147 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-				<field name="replaceAnywhereEnabled" type="radio" default="1" label="Enable replaceAnywhere" description="When enabled this will allow use of variables in braces within the site content in articles, modules, plugins etc. User variables are set up already, eg. {swiss.username}, {swiss.email} etc.">
+			</fieldset>
+
+
+			<fieldset name="PLG_SWISS_GENERATOR_TAG_REPLACEMENT_FIELDSET_LABEL">
+				<field name="generatorTagEnabled" type="radio" default="1" label="Enable tag change" description="When enabled this will allow you to edit or remove the generator metatag.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				
-				<field name="cookieDirectiveEnabled" type="radio" default="1" label="Enable cookie directive" description="When enabled this will display info relating to the EU Cookie Directive, namely alerting users of the site that you use cookies. Once they accept the message will be gone from the screen.">
+                <field name="metaGenerator" type="text" size="40" default="" label="Generator tag" description="A standard Joomla! install adds a Generator metatag to the site head. Here you can clear it or change it to something more meaningful to you. Leave the field empty to remove the tag entirely." />
+			</fieldset>
+
+
+			<fieldset name="PLG_SWISS_CONTENT_REPLACEMENT_FIELDSET_LABEL">
+				<field name="replaceAnywhereEnabled" type="radio" default="1" label="Enable replaceAnywhere" description="When enabled this will allow use of variables in braces within the site content in articles, modules, plugins etc.&lt;br /&gt;Some variables are set up already:&lt;br /&gt; - {swiss.name}&lt;br /&gt; - {swiss.username}&lt;br /&gt; - {swiss.email}&lt;br /&gt; - {swiss.lastvisitdate}&lt;br /&gt; - {swiss.today.dd/mm/yyyy}&lt;br /&gt; - {swiss.today.day}&lt;br /&gt; - {swiss.today.date}&lt;br /&gt; - {swiss.today.month}&lt;br /&gt; - {swiss.today.year}">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				
-				<field name="autoLoginEnabled" type="radio" default="0" label="Enable registration autologin" description="When enabled this will automatically log newly registered user in.">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
-				</field>
-				
-            </fieldset>
-			
-            <fieldset name="PLG_SWISS_INSERT_CODE_FIELDSET_LABEL">
+				<field name="replaceCustom" type="textarea" rows="4" cols="40" filter="raw" default="" label="Custom replacement strings" description="If you have enabled replaceAnywhere you can add your own sitewide search/replace strings here. Each pair must be on its own line separated by =>, the format is:&lt;br /&gt;search1=>replace1&lt;br /&gt;search2=>replace2&lt;br /&gt;search3=>replace3&lt;br /&gt;" />
+			</fieldset>
+
+
+			<fieldset name="PLG_SWISS_INSERT_CODE_FIELDSET_LABEL">
 				<field name="insertCodeEnabled" type="radio" default="0" label="Enable insertion of additional code" description="When enabled this will allow you to add CSS, javascript or HTML to the final page.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="css" type="textarea" default="" label="Enter some CSS" description="If you have enabled code insertion you can add CSS here that will be added to the head section of the rendered page" rows="10" cols="5" filter="raw" />
-				<field name="javascript" type="textarea" default="" label="Enter some Javascript" description="If you have enabled code insertion you can add Javascript here that will be added to the head section of the the rendered page" rows="10" cols="5" filter="raw" />
-				<field name="bodyStart" type="textarea" default="" label="Code after &lt;body&gt; tag" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the &lt;body&gt; tag" rows="10" cols="5" filter="raw" />
-				<field name="bodyStart" type="textarea" default="" label="Code before &lt;/body&gt;" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the &lt;/body&gt; tag" rows="10" cols="5" filter="raw" />
-				
-				<field name="afterLoginSystemMessageEnabled" type="radio" default="0" label="Enable message after login" description="When enabled the user will see the message below after logging in.">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
-				</field>
-                <field name="afterLoginSystemMessage" type="text" default="" label="Login success message" description="A URL to redirect users to after a successful login (Registration autologin must be enabled!)" />
+				<field name="css" type="textarea" rows="4" cols="40" filter="raw" default="" label="Enter some CSS" description="If you have enabled code insertion you can add CSS here that will be added to the head section of the rendered page" />
+				<field name="javascriptExternal" type="textarea" rows="4" cols="40" filter="raw" default="" label="External JS sources" description="If you have enabled code insertion you can add external Javascript sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs. Separate multiple sources with three dashes ---" />
+				<field name="javascript" type="textarea" rows="4" cols="40" filter="raw" default="" label="Enter Javascript code" description="If you have enabled code insertion you can add Javascript here that will be added to the head section of the the rendered page" />
+				<field name="bodyStart" type="textarea" rows="4" cols="40" filter="raw" default="" label="After opening BODY tag" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the BODY tag" />
+				<field name="bodyEnd" type="textarea" rows="4" cols="40" filter="raw" default="" label="Before closing BODY tag;" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the BODY tag" />
 			</fieldset>
 			
-            <fieldset name="PLG_SWISS_AFTER_LOGIN_FIELDSET_LABEL">
-				<field name="afterLoginRedirectEnabled" type="radio" default="0" label="Enable redirection after login" description="When enabled this will automatically log newly registered user in.">
+			
+			<fieldset name="PLG_SWISS_AFTER_LOGIN_FIELDSET_LABEL">
+				<field name="autoLoginEnabled" type="radio" default="0" label="&lt;span style='font-weight:bold;color:red;'&gt;[WIP]&lt;/span&gt; Enable registration autologin" description="NB: THIS IS EXPERIMENTAL!&lt;br /&gt;When enabled this will automatically log newly registered user in. Note that it will only work if the registration setting is NONE in UserManager->Options->NewUserAccountActivation=NONE - otherwise the account is blocked and it will create a login failure.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-                <field name="afterLoginRedirectUrl" type="text" default="" label="Redirect URL" description="A URL to redirect users to after a successful login (Registration autologin must be enabled!)" />
-				
-				<field name="afterLoginSystemMessageEnabled" type="radio" default="0" label="Enable message after login" description="When enabled the user will see the message below after logging in.">
+				<field type="spacer" name="s1" hr="true" />
+				<field name="afterLoginSystemMessageEnabled" type="radio" default="0" label="System message after login" description="When enabled the user will see the message below after logging in.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-                <field name="afterLoginSystemMessage" type="text" default="" label="Login success message" description="A URL to redirect users to after a successful login (Registration autologin must be enabled!)" />
+				<field name="afterLoginSystemMessage" type="textarea" rows="2" cols="40" default="" label="Login message" description="A message to display to users to after a successful login (System message after login must be enabled!)" />
+				<field name="afterLoginSystemMessageType" type="radio" default="message" label="Message type" description="Choose whether your message is marked as a message, a warning or an error (different styles will be applied by the template).">
+					<option value="message">Message</option>
+					<option value="warning">Warning</option>
+					<option value="error">Error</option>
+				</field>
+				<field type="spacer" name="s2" hr="true" />
+				<field name="afterLoginRedirectEnabled" type="radio" default="0" label="Enable login redirect" description="When enabled you can redirect users after logging in by modifying the settings below.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="afterLoginRedirectUsergroup" type="usergroup" label="Group to redirect on login"  size="10" description="Select which usergroup/s to redirect  on login. " multiple="true" />
+				<field name="afterLoginRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Login redirect URL" description="A URL to redirect users to after a successful login (leave empty to disable)" />
+				<field type="spacer" name="s3" hr="true" />
+				<field name="afterLogOutRedirectEnabled" type="radio" default="0" label="Enable logout redirect" description="When enabled you can redirect users after logging out by modifying the settings below.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="afterLogOutRedirectUsergroup" type="usergroup" default="2" label="Group to redirect on logout"  size="10" description="Select which usergroup/s to redirect on log out. " multiple="true" />
+				<field name="afterLogOutRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Logout redirect URL" description="A URL to redirect users to after logout (leave empty to disable)" />
+				<field type="spacer" name="s4" hr="true" />
+				<field name="failedLoginRedirectEnabled" type="radio" default="0" label="Enable failed login handling" description="When enabled you can create a custom system message for failed login attempts and optionally force a delay before a retry is permitted.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="failedLoginSystemMessage" type="textarea" rows="2" cols="40" default="" label="Failed login message" description="A message to display to users to after a failed login attempt (leave empty to disable)" />
+				<field name="failedLoginSystemMessageType" type="radio" default="error" label="Message type" description="Choose whether your message is marked as a message, a warning or an error (different styles will be applied by the template).">
+					<option value="message">Message</option>
+					<option value="warning">Warning</option>
+					<option value="error">Error</option>
+				</field>
+				<!--<field name="failedLoginHideSystemMessage" type="text" size="40" default="Username and password do not match" label="Hide default message" description="if you enter a part of the string of the default failed login message here the default message will be removed from th the message queue (leave empty to disable)" />-->
+				<field name="failedLoginRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Failed login redirect URL" description="A URL to redirect users to after a failed login (leave empty to disable)" />
+				<field name="failedLoginDelay" type="text" default="0" label="Retry delay" description="Enter just a number which will be the number of seconds that the system will delay subsequent login attempts by (set it to zero to disable)" />
 			</fieldset>
 			
-            <fieldset name="PLG_SWISS_COOKIE_DIRECTIVE_FIELDSET_LABEL">
-                <field name="width" type="text" default="0" label="PLG_SWISS_COOKIEDIRECTIVE_WIDTH" description="PLG_SWISS_COOKIEDIRECTIVE_WIDTH_DESC" />
-                <field name="position" type="list" default="bottom" description="PLG_SWISS_COOKIEDIRECTIVE_POSITION_DESC" label="PLG_SWISS_COOKIEDIRECTIVE_POSITION">
-                    <option value="bottom">Bottom</option>
-                    <option value="top">Top</option>
-                </field>				
-                <field name="backgroundColor" type="text" default="1D1D1D" label="PLG_SWISS_COOKIEDIRECTIVE_BG_COLOR" description="PLG_SWISS_COOKIEDIRECTIVE_BG_COLOR_DESC" />
-                <field name="textColor" type="text" default="FFFFFF" label="PLG_SWISS_COOKIEDIRECTIVE_TEXT_COLOR" description="PLG_SWISS_COOKIEDIRECTIVE_TEXT_COLOR_DESC" />
-                <field name="warningMessage" type="textarea" rows="3" cols="15" default="We use cookies to improve our website and your experience when using it. Cookies used for the essential operation of the site have already been set." label="PLG_SWISS_COOKIEDIRECTIVE_WARNING_MESSAGE" description="PLG_SWISS_COOKIEDIRECTIVE_WARNING_MESSAGE_DESC" />
-                <field name="detailsUrl" type="text" default="index.php?" label="PLG_SWISS_COOKIEDIRECTIVE_DETAILS_URL" description="PLG_SWISS_COOKIEDIRECTIVE_DETAILS_URL_DESC" />
-                <field name="urlColor" type="text" default="FFFFFF" label="PLG_SWISS_COOKIEDIRECTIVE_URL_COLOR" description="PLG_SWISS_COOKIEDIRECTIVE_URL_COLOR_DESC" />
-                <field name="negativeVerticalMargin" type="text" default="10" label="PLG_SWISS_COOKIEDIRECTIVE_NEGATIVE_VERTICAL_MARGIN" description="PLG_SWISS_COOKIEDIRECTIVE_NEGATIVE_VERTICAL_MARGIN_DESC" />
-                <field name="bottomcurves" type="text" default="0" label="PLG_SWISS_COOKIEDIRECTIVE_BOTTOM_CURVES" description="PLG_SWISS_COOKIEDIRECTIVE_BOTTOM_CURVES_DESC" />
-                <field name="topcurves" type="text" default="0" label="PLG_SWISS_COOKIEDIRECTIVE_TOP_CURVES" description="PLG_SWISS_COOKIEDIRECTIVE_TOP_CURVES_DESC" />
-                
-                <field name="continueColor" type="list" default="white" description="PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_DESC" label="PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR">
-                    <option value="red">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_RED</option>
-                    <option value="blue">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_BLUE</option>
-                    <option value="green">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_GREEN</option>
-                    <option value="yellow">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_YELLOW</option>
-                    <option value="black">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_BLACK</option>
-                    <option value="white">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_WHITE</option>
-                    <option value="grey">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_GREY</option>
-                </field>
-                
-                <field name="iacceptcookies" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_I_ACCEPT_COOKIES" default="I accept cookies from this site" />
-                <field name="cookiedetailtext" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_COOKIE_DETAIL_TEXT" default="To find out more about the cookies we use and how to delete them, see our" />
-                <field name="cookiedetaillink" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_COOKIE_DETAIL_LINK_TEXT" default="Privacy Policy" />
-                <field name="cookiedetaillinktitle" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_COOKIE_DETAIL_LINK_TITLE" default="View our privacy policy page" />
-				<field name="buttontext" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_BUTTON_TEXT" default="Agree" />
-                <field name="infoiconaltext" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_COOKIE_DETAIL_LINK_TITLE" default="EU Cookie Directive Plugin Information" />
-            </fieldset>
-        </fields>
-    </config>
-</install>
+			
+            <fieldset name="PLG_SWISS_REGISTERED_USER_HOMEPAGE_FIELDSET_LABEL">
+				<field name="registeredUserHomepageEnabled" type="radio" default="0" label="Enable registered homepage" description="When enabled this will allow you to set a different home page for your registered users to that set in the menu structure. The result will be that when they click any HOME link they will be taken to the page you assign here.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="registeredUserHomeUrl" type="menuitem" default="" label="New homepage" description="The menu item you select will become the home page for any registered users." />
+			</fieldset>
+			
+			
+			<fieldset name="PLG_SWISS_COOKIE_DIRECTIVE_FIELDSET_LABEL">
+				<field name="cookieDirectiveEnabled" type="radio" default="1" label="Enable cookie alert" description="When enabled this will display info relating to the EU Cookie Directive, namely alerting users of the site that you use cookies. Once they accept the message will be gone from the screen.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="cookieInfoText" type="textarea" rows="4" cols="40" filter="raw" label="Alert message" description="The text that users who have not accepted cookies will see. You can use HTML here so you wil be able to add links to your privacy policy, cookie info etc." default="We use cookies to improve our website and your experience when using it. Cookies used for the essential operation of the site have already been set." />
+				<field name="cookieButtonText" type="text" default="Accept" label="Accept button text" description="The text that will be on the acceptance button" />
+				<field name="cookieButtonClass" type="text" default="" label="Button class" description="Add a class to the BUTTON tag (some templates have special styles for buttons)." />
+				<field name="cookieBoxPosition" type="list" default="bottom:0" label="Box position" description="Select position for the message box">
+					<option value="top:0">Top</option>
+					<option value="bottom:0">Bottom</option>
+				</field>
+				<field name="cookieBodyMargin" type="text" default="30px" label="Body margin" description="Enter an amount of margin to add to the BODY tag. This will become MARGIN-TOP if you chose to place the alert at the top of the page or MARGIN-BOTTOM if you chose to position the alert at the bottom of the page. This will help prevent the alert from obscuring content. Remember to include the units"/>
+				<field name="cookieBoxColour" type="color" default="#000000" label="Box background" description="Select a colour for the background of the message box"/>
+				<field name="cookieBoxWidth" type="text" default="100%" label="Box width" description="Select a width for the message box and remember to include the units"/>
+				<field name="cookieBoxPadding" type="text" default="5px" label="Box padding" description="Select a size for the padding and remember to include the units"/>
+				<field name="cookieBoxRadius" type="text" default="0" label="Box radius" description="Select a size for the border radius and remember to include the units"/>
+				<field name="cookieTextColour" type="color" default="#ffffff" label="Text colour" description="Select a colour for the text of the message box"/>
+				<field name="cookieTextSize" type="text" default="1em" label="Text size" description="Select a size for the text and remember to include the units"/>
+				<field name="cookieTextAlign" type="list" default="center" label="Text alignment" description="Select alignment for the text">
+					<option value="left">Left</option>
+					<option value="right">Right</option>
+					<option value="center">Center</option>
+				</field>
+			</fieldset>
+
+
+			<fieldset name="PLG_SWISS_DEBUG_OUTPUT_FIELDSET_LABEL">
+				<field name="debugOutputEnabled" type="radio" default="0" label="&lt;span style='font-weight:bold;color:red;'&gt;[WIP]&lt;/span&gt; Enable debug output" description="NB: THIS IS EXPERIMENTAL!&lt;br /&gt;When enabled this will allow you show core Joomla! debug output, optionally restricted by IP address and/or user group.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="debugUsergroup" type="usergroup" label="Limit by usergroup" description="Limit debug output to specified user groups." multiple="true" size="10" />
+				<field name="debugIpAddress" type="text" default="" label="Limit by IP" description="Limit debug output to specified IP address."/>
+				<field name="profile" type="radio" default="1" label="Show Profiling" description="Display the profiling waypoints">
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</field>
+				<field name="queries" type="radio" default="1" label="Show queries" description="Display a list the queries executed while displaying the page.">
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</field>
+				<field name="query_types" type="radio" default="1" label="Show Query Types" description="Display a list of unique query types and their number of occurrences for the current page. Useful for finding out about repeated queries that are either redundant or which can be grouped into a single, more efficient query.">
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</field>
+				<field name="memory" type="radio" default="1" label="Show Memory Usage" description="Display the total memory usage.">
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
