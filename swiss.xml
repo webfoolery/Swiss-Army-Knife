@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="system">
+	<name>System - Swiss</name>
+	<author>Chris Sheridan</author>
+	<creationDate>2014-08-21</creationDate>
+	<copyright>Copyright (C) 2104 webfoolery. All rights reserved.</copyright>
+	<license>GNU General Public License</license>
+	<authorEmail>joomla@webfoolery.com</authorEmail>
+	<authorUrl>webfoolery.com</authorUrl>
+	<version>1.0</version>
+	<description>
+		<![CDATA[ <p>A system plugin for managing stuff... Current tools include:</p>
+		<ul>
+			<li>Replace content anywhere</li>
+			<li>EU Cookie Directive alert</li>
+			<li>Auto login after registration</li>
+			<li>Redirect user after login</li>
+			<li>System message after login</li>
+		</ul>]]>
+	</description>
+	<files>
+		<filename plugin="swiss">swiss.php</filename>
+	</files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_system_swiss.ini</language>
+    </languages> 
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+				<field name="replaceAnywhereEnabled" type="radio" default="1" label="Enable replaceAnywhere" description="When enabled this will allow use of variables in braces within the site content in articles, modules, plugins etc. User variables are set up already, eg. {swiss.username}, {swiss.email} etc.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				
+				<field name="cookieDirectiveEnabled" type="radio" default="1" label="Enable cookie directive" description="When enabled this will display info relating to the EU Cookie Directive, namely alerting users of the site that you use cookies. Once they accept the message will be gone from the screen.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				
+				<field name="autoLoginEnabled" type="radio" default="0" label="Enable registration autologin" description="When enabled this will automatically log newly registered user in.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				
+            </fieldset>
+			
+            <fieldset name="PLG_SWISS_INSERT_CODE_FIELDSET_LABEL">
+				<field name="insertCodeEnabled" type="radio" default="0" label="Enable insertion of additional code" description="When enabled this will allow you to add CSS, javascript or HTML to the final page.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="css" type="textarea" default="" label="Enter some CSS" description="If you have enabled code insertion you can add CSS here that will be added to the head section of the rendered page" rows="10" cols="5" filter="raw" />
+				<field name="javascript" type="textarea" default="" label="Enter some Javascript" description="If you have enabled code insertion you can add Javascript here that will be added to the head section of the the rendered page" rows="10" cols="5" filter="raw" />
+				<field name="bodyStart" type="textarea" default="" label="Code after &lt;body&gt; tag" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the &lt;body&gt; tag" rows="10" cols="5" filter="raw" />
+				<field name="bodyStart" type="textarea" default="" label="Code before &lt;/body&gt;" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the &lt;/body&gt; tag" rows="10" cols="5" filter="raw" />
+				
+				<field name="afterLoginSystemMessageEnabled" type="radio" default="0" label="Enable message after login" description="When enabled the user will see the message below after logging in.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+                <field name="afterLoginSystemMessage" type="text" default="" label="Login success message" description="A URL to redirect users to after a successful login (Registration autologin must be enabled!)" />
+			</fieldset>
+			
+            <fieldset name="PLG_SWISS_AFTER_LOGIN_FIELDSET_LABEL">
+				<field name="afterLoginRedirectEnabled" type="radio" default="0" label="Enable redirection after login" description="When enabled this will automatically log newly registered user in.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+                <field name="afterLoginRedirectUrl" type="text" default="" label="Redirect URL" description="A URL to redirect users to after a successful login (Registration autologin must be enabled!)" />
+				
+				<field name="afterLoginSystemMessageEnabled" type="radio" default="0" label="Enable message after login" description="When enabled the user will see the message below after logging in.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+                <field name="afterLoginSystemMessage" type="text" default="" label="Login success message" description="A URL to redirect users to after a successful login (Registration autologin must be enabled!)" />
+			</fieldset>
+			
+            <fieldset name="PLG_SWISS_COOKIE_DIRECTIVE_FIELDSET_LABEL">
+                <field name="width" type="text" default="0" label="PLG_SWISS_COOKIEDIRECTIVE_WIDTH" description="PLG_SWISS_COOKIEDIRECTIVE_WIDTH_DESC" />
+                <field name="position" type="list" default="bottom" description="PLG_SWISS_COOKIEDIRECTIVE_POSITION_DESC" label="PLG_SWISS_COOKIEDIRECTIVE_POSITION">
+                    <option value="bottom">Bottom</option>
+                    <option value="top">Top</option>
+                </field>				
+                <field name="backgroundColor" type="text" default="1D1D1D" label="PLG_SWISS_COOKIEDIRECTIVE_BG_COLOR" description="PLG_SWISS_COOKIEDIRECTIVE_BG_COLOR_DESC" />
+                <field name="textColor" type="text" default="FFFFFF" label="PLG_SWISS_COOKIEDIRECTIVE_TEXT_COLOR" description="PLG_SWISS_COOKIEDIRECTIVE_TEXT_COLOR_DESC" />
+                <field name="warningMessage" type="textarea" rows="3" cols="15" default="We use cookies to improve our website and your experience when using it. Cookies used for the essential operation of the site have already been set." label="PLG_SWISS_COOKIEDIRECTIVE_WARNING_MESSAGE" description="PLG_SWISS_COOKIEDIRECTIVE_WARNING_MESSAGE_DESC" />
+                <field name="detailsUrl" type="text" default="index.php?" label="PLG_SWISS_COOKIEDIRECTIVE_DETAILS_URL" description="PLG_SWISS_COOKIEDIRECTIVE_DETAILS_URL_DESC" />
+                <field name="urlColor" type="text" default="FFFFFF" label="PLG_SWISS_COOKIEDIRECTIVE_URL_COLOR" description="PLG_SWISS_COOKIEDIRECTIVE_URL_COLOR_DESC" />
+                <field name="negativeVerticalMargin" type="text" default="10" label="PLG_SWISS_COOKIEDIRECTIVE_NEGATIVE_VERTICAL_MARGIN" description="PLG_SWISS_COOKIEDIRECTIVE_NEGATIVE_VERTICAL_MARGIN_DESC" />
+                <field name="bottomcurves" type="text" default="0" label="PLG_SWISS_COOKIEDIRECTIVE_BOTTOM_CURVES" description="PLG_SWISS_COOKIEDIRECTIVE_BOTTOM_CURVES_DESC" />
+                <field name="topcurves" type="text" default="0" label="PLG_SWISS_COOKIEDIRECTIVE_TOP_CURVES" description="PLG_SWISS_COOKIEDIRECTIVE_TOP_CURVES_DESC" />
+                
+                <field name="continueColor" type="list" default="white" description="PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_DESC" label="PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR">
+                    <option value="red">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_RED</option>
+                    <option value="blue">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_BLUE</option>
+                    <option value="green">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_GREEN</option>
+                    <option value="yellow">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_YELLOW</option>
+                    <option value="black">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_BLACK</option>
+                    <option value="white">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_WHITE</option>
+                    <option value="grey">PLG_SWISS_COOKIEDIRECTIVE_CONTINUE_COLOR_GREY</option>
+                </field>
+                
+                <field name="iacceptcookies" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_I_ACCEPT_COOKIES" default="I accept cookies from this site" />
+                <field name="cookiedetailtext" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_COOKIE_DETAIL_TEXT" default="To find out more about the cookies we use and how to delete them, see our" />
+                <field name="cookiedetaillink" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_COOKIE_DETAIL_LINK_TEXT" default="Privacy Policy" />
+                <field name="cookiedetaillinktitle" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_COOKIE_DETAIL_LINK_TITLE" default="View our privacy policy page" />
+				<field name="buttontext" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_BUTTON_TEXT" default="Agree" />
+                <field name="infoiconaltext" type="text" label="PLG_SWISS_COOKIEDIRECTIVE_COOKIE_DETAIL_LINK_TITLE" default="EU Cookie Directive Plugin Information" />
+            </fieldset>
+        </fields>
+    </config>
+</install>
