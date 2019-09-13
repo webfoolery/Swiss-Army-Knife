@@ -4,11 +4,12 @@ jimport( 'joomla.plugin.plugin' );
 // require_once(JPATH_SITE.DS.'/components/com_swiss/swissHelper.php');
 
 // TODO:: onUserAfterSave AUTO LOGIN NOT WORKING (MAY NEED TO BE IN USER PLUGIN?)
-// TODO:: REQUIRE $_GET VARIABLE TO ACCESS ADMIN AREA
-// TODO:: IP BASED DEBUG OUTPUT
+// TODO:: REQUIRE $_GET VARIABLE TO ACCESS ADMIN AREA IF NOT LOGGED IN
 // TODO:: IP BASED VISITOR BLACKLIST
 // TODO:: MASTER USER LOGIN --> CAN'T BE DONE IN plgSystem AS onUserAuthenticate WON'T TRIGGER UNLESS IN AN AUTHENTICATION PLUGIN...
 // TODO:: UNABLE TO SHOW SYSTEM MESSAGE AFTER LOGOUT. ONE CLICK SHOULD TELL PEOPLE THEY'RE LOGGED OUT
+// TODO:: replaceContentAnywhere() CURRENTLY INCLUDES THE <HEAD>. USING onContentPrepare MIGHT LIMIT IT TO THE BODY
+// TODO:: IP BASED DEBUG OUTPUT
 // TODO:: DATABASE LOGGING NEEDS FINISHING
 	// CURRENTLY OUTPUTS TO SCREEN, NEED FILE OPTIONS, LIMIT USER OPTIONS ETC.
 
@@ -29,7 +30,6 @@ class plgSystemSwiss extends JPlugin {
 				$this->logDB = true;
 			}
 		}
-		 
 	}
 	
 	public function __destruct() {
@@ -58,22 +58,116 @@ class plgSystemSwiss extends JPlugin {
 		}
 	}
 
+
+
+/*
+// THE METHODS BELOW ARE AVAILABLE FOR EXPLOITATION BUT CURRENTLY UNUSED
+
+	public function onContentPrepare($context, &$article, &$params, $page = 0) {
+		// This is the first stage in preparing content for output and is the most common point for content orientated plugins to do their work. 
+		// Since the article and related parameters are passed by reference, event handlers can modify them prior to display.
+	}
+
+	public function onContentAfterTitle($context, &$article, &$params, $limitstart = 0) {
+		// This event only exists in Joomla Joomla 3.x. 
+		// This is a request for information that should be placed between the content title and the content body. 
+		// Although parameters are passed by reference, this is not the event to modify article data. Use onContentPrepare for that purpose. 
+		// Note this event has special purpose in com_content for use in handling the introtext.
+	}
+
+	public function onContentBeforeDisplay($context, &$article, &$params, $limitstart = 0) {
+		// This is a request for information that should be placed immediately before the generated content. 
+		// For views that generate HTML, this might include the use of styles that are specified as part of the content or related parameters. 
+		// Although parameters are passed by reference, this is not the event to modify article data. Use onContentPrepare for that purpose.
+	}
+
+	public function onContentAfterDisplay($context, &$article, &$params, $limitstart = 0) {
+		// This is a request for information that should be placed immediately after the generated content. 
+		// For views that generate HTML, this might include the closure of styles that are specified as part of the content or related parameters. 
+		// Although parameters are passed by reference, this is not the event to modify article data. Use onContentPrepare for that purpose.
+	}
+
+	public function onContentBeforeSave($context, $article, $isNew, $data) {
+		// This is an event that is called right before the content is saved into the database. 
+		// You can abort the save by returning false. In the case of JModelLegacy for example 
+		// the error will then be set by calling $this->setError($table->getError); to be displayed to user.
+	}
+
+	public function onContentPrepareForm($form, $data) {
+		// Called before a JForm is rendered. It can be used to modify the JForm object in memory before rendering. 
+		// For example, use JForm->loadFile() to add fields or JForm->removeField() to remove fields. 
+		// Or use JForm->setFieldAttribute() or other JForm methods to modify fields for the form.
+	}
+
+	public function onContentPrepareData($form, $data) {
+		// Called after the data for a JForm has been retrieved. 
+		// It can be used to modify the data for a JForm object in memory before rendering. 
+		// This is usually used in tandem with the onContentPrepareForm method - this event adds the data to the already altered JForm.
+	}
+
+	public function onContentBeforeDelete($context, $data) {
+		// This is an event that is called right before the content is deleted from the database. 
+		// You can abort the delete by returning false. 
+		// In the case of JModelLegacy for example the error will then be set by calling $this->setError($table->getError); to be displayed to user.
+	}
+
+	public function onContentAfterDelete($context, $article) {
+		// This is an event that is called after the content is deleted from the database. 
+		// An example use case would be redirecting user to the appropriate place after deleting.
+	}
+
+	public function onContentChangeState($context, $article) {
+		// This is an event that is called after content has its state change (e.g. Published to Unpublished).
+	}
+
+	public function onContentSearch($text, $phrase, $ordering, $areas) {
+		// This event is triggered by a variety of search related operations. 
+		// It is a request for a plugin to return the result of a search request. 
+		// The rows must return the following fields, which are used in a common display routine:
+			// browsernav
+			// catslug
+			// created
+			// href
+			// section
+			// slug
+			// text
+			// title
+	}
+
 	function onBeforeRender() {
+		// This event is triggered immediately before the framework has rendered the application
 	}
 
 	function onAfterDispatch() {
-	}
-
-	function onSearch() {
+		// This event is triggered after the framework has dispatched the application
 	}
 
 	function onSearchAreas() {
 	}
-
-	function onGetWebServices() {
+	
+ 	public function onUserLogout($credentials=array(), $options=array()) {
+		// This event is triggered before the user is logged out of the system.
+		// If any plugin returns false, the global logout fails and the onUserLogoutFailure event is fired; if it succeeds, onUserAfterLogout event is triggered instead
+	}
+	
+	function onUserAfterLogin($options = array()) {
+		// This event is triggered whenever a user is successfully logged in
+		// Options is array with:
+			// remember
+			// return
+			// entry_url
+			// action
+			// user - JUser Object
+			// responseType
 	}
 
+*/
+
+
+
+
 	function onAfterInitialise() {
+		// This event is triggered after the framework has loaded and initialised and the router has routed the client request
 		$app = JFactory::getApplication();
 		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
 		$user = JFactory::getUser();
@@ -96,6 +190,7 @@ class plgSystemSwiss extends JPlugin {
 	}
 
  	function onAfterRoute() {
+		 // This event is triggered after the framework has loaded and initialised and the router has routed the client request
 		$app = JFactory::getApplication();
 		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
 		$user = JFactory::getUser();
@@ -176,7 +271,6 @@ class plgSystemSwiss extends JPlugin {
 		$app = JFactory::getApplication();
 		if ($this->params->get('enableAdminLink', false) == 1) $this->enableAdminLink();
 		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
-		if ($this->params->get('replaceAnywhereEnabled', false) == 1) $this->replaceContentAnywhere();
 		if ($this->params->get('cookieDirectiveEnabled', false) == 1) $this->cookieDirective();
 		
 		// INSERT ANY REQUESTED BODY CODE
@@ -198,6 +292,7 @@ class plgSystemSwiss extends JPlugin {
 	}
 
 	function onBeforeCompileHead() {
+		// This event is triggered before the framework creates the Head section of the Document
 		$app = JFactory::getApplication();
 		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
 		$doc = JFactory::getDocument();
@@ -362,6 +457,7 @@ JAVASCRIPT;
 	}
 	
  	public function onUserLogin($user, $options = array()) {
+		 // This event is triggered after the user is authenticated against the Joomla! user-base
 		$app = JFactory::getApplication();
 		if (!$app->isSite()) return true; // DO NOT RUN IN ADMIN AREA
 		
@@ -386,6 +482,7 @@ JAVASCRIPT;
 	// }
 
 	function onUserLoginFailure() {
+		// This event is triggered whenever a user authentication request is failed by any plugin
 		$app = JFactory::getApplication();
 		if (!$app->isSite()) return true; // DO NOT RUN IN ADMIN AREA
 		
@@ -412,6 +509,7 @@ JAVASCRIPT;
 	}
 	
 	function onUserAfterSave($user, $isNew, $success, $msg) {
+		// This event is triggered after an update of a user record, or when a new user has been stored in the database
 		$app = JFactory::getApplication();
 		// AUTOMATICALLY LOG THE NEW USER IN
 		if($app->isSite() && $isNew && $this->params->get('autoLoginEnabled') == 1) {
