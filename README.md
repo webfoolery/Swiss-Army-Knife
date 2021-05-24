@@ -7,7 +7,7 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 
 * **Enable auto-login:** Allows users to automatically log in after registering.
 
-* **Insert code:** When enabled this will allow you to add CSS, javascript or HTML to the final page. Code is added to the HEAD section and you can also add code after the opening BODY tag or before the closing BODY tag. You can enter your CSS/Javascript in the plugin or add links to an external code source/s
+* **Insert code:** When enabled this will allow you to add CSS, javascript, metatags or HTML to the final page. Code can be added to the `<head>` or `<body>` section and you can also either position the code after the opening tag of before the closing tag. You can enter your CSS/Javascript in the plugin or add links to an external code source/s
 
 * **System message after login:** Display a system message to users after a successful login
 
@@ -30,6 +30,10 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 * **Force enable admin link** In newer Joomla! versions (3+ I think) the icon link to the `/administrator` page in the top left of the administrator area becomes disabled when you are inside an extension or setting. This will allow that to always be active, so if you need another admin page It's simple to middle click it to open another one.
 
 ## Changelog
+
+**2020-05-22**  
+Version update: 1.7  
+Adds facility to add custom code to the `<head>` section, either after opening tag or before closing tag
 
 **2019-09-12**  
 Version update: 1.6  

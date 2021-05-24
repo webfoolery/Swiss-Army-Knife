@@ -2,14 +2,14 @@
 <extension version="2.5" type="plugin" group="system">
 	<name>System - Swiss Army Knife</name>
 	<author>Chris Sheridan</author>
-	<creationDate>2019-09-10</creationDate>
+	<creationDate>2021-05-22</creationDate>
 	<copyright>Copyright (C) 2104 webfoolery. All rights reserved.</copyright>
 	<license>GNU General Public License</license>
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
-	<version>1.6.0</version>
+	<version>1.7.0</version>
 	<updateservers>
-		<server type="extension" name="Swiss Army Knife" priority="1">http://webfoolery.com/downloads/joomla/update_plgSysSwiss_J2.5.xml</server>
+		<server type="extension" name="Swiss Army Knife" priority="1">https://webfoolery.com/downloads/joomla/plgSysSwiss_update.xml</server>
 	</updateservers>
 	<description>PLG_SYS_SWISS_DESCRIPTION</description>
 	<files>
@@ -62,12 +62,14 @@
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
+				<field name="headStart" type="textarea" label="After opening HEAD tag" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the HEAD tag" />
+				<field name="headEnd" type="textarea" label="Before closing HEAD tag" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the closing HEAD tag. NB: other processes may run after this so there is a chance it could have items after it!" />
+				<field name="bodyStart" type="textarea" label="After opening BODY tag" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the BODY tag" />
+				<field name="bodyEnd" type="textarea" label="Before closing BODY tag" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the closing BODY tag" />
 				<field name="css" type="textarea" label="Enter some CSS" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add CSS here that will be added to the head section of the rendered page. Do not put &amp;lt;style&amp;gt; tags in, just add the actual CSS!" />
 				<field name="cssExternal" type="textarea" label="External CSS sources" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add external CSS sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
 				<field name="javascript" type="textarea" label="Enter Javascript code" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add Javascript here that will be added to the head section of the the rendered page. Do not put &amp;lt;script&amp;gt; tags in, just add the actual JS code!" />
 				<field name="javascriptExternal" type="textarea" label="External JS sources" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add external Javascript sources here that will be added to the head section of the the rendered page. Theses should be in the format of URLs with one entry per line (ignore word-wrapping)" />
-				<field name="bodyStart" type="textarea" label="After opening BODY tag" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add code here that will be added to the rendered page straight after the BODY tag" />
-				<field name="bodyEnd" type="textarea" label="Before closing BODY tag" rows="4" cols="40" filter="raw" default="" description="If you have enabled code insertion you can add code here that will be added to the rendered page before the BODY tag" />
 			</fieldset>
 			
 			
