@@ -13,3 +13,6 @@
 2020-05-22
 	Changed version to 1.7
 	Added facility to add custom code to the <head> section, either after opening tag or before closing tag
+2022-01-12
+Version update: 1.8  
+Fixes issue when adding custom code immediately after opening `<head>` tag (code was placed before the tag)
