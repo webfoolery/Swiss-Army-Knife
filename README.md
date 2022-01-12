@@ -31,6 +31,10 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 
 ## Changelog
 
+**2021-01-12**  
+Version update: 1.8  
+Fixes issue when adding custom code immediately after opening `<head>` tag (code was placed before the tag)
+
 **2020-05-22**  
 Version update: 1.7  
 Adds facility to add custom code to the `<head>` section, either after opening tag or before closing tag

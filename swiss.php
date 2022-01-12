@@ -194,7 +194,7 @@ class plgSystemSwiss extends JPlugin {
 				}
 			}
 			if (strlen($insertBodyEnd)) $buffer = str_replace('</body>', $insertBodyEnd.'</body>', $buffer);
-			if (strlen($insertHeadStart)) $buffer = str_replace('<head>', $insertHeadStart.'<head>', $buffer);
+			if (strlen($insertHeadStart)) $buffer = str_replace('<head>', '<head>'.$insertHeadStart, $buffer);
 			if (strlen($insertHeadEnd)) $buffer = str_replace('</head>', $insertHeadEnd.'</head>', $buffer);
 			JResponse::setBody($buffer);
 		}
