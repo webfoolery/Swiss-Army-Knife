@@ -361,7 +361,7 @@ JAVASCRIPT;
 			if ($ogTitle && $ogTitle == 'auto') $doc->setMetaData('og:title', $doc->getTitle(), 'property');
 			if ($ogTitle && $ogTitle == 'autoDomain') $doc->setMetaData('og:title', $config->get('sitename').' | '.$doc->getTitle(), 'property');
 			if ($ogUrl) $doc->setMetaData('og:url', JUri::getInstance()->toString(), 'property');
-			if ($ogType) $doc->setMetaData('og:type', 'website', 'property');
+			if ($ogType) $doc->setMetaData('og:type', 'article', 'property');
 			if ($ogDescription) $doc->setMetaData('og:description', $doc->getDescription(), 'property');
 			if ($ogImage) {
 				$doc->setMetaData('og:image', JUri::getInstance()->base().$ogImage, 'property');
