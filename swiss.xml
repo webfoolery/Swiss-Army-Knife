@@ -7,7 +7,7 @@
 	<license>GNU General Public License</license>
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
-	<version>1.7.0</version>
+	<version>1.9.0</version>
 	<updateservers>
 		<server type="extension" name="Swiss Army Knife" priority="1">https://webfoolery.com/downloads/joomla/plgSysSwiss_update.xml</server>
 	</updateservers>
@@ -39,12 +39,61 @@
 			</fieldset>
 
 
-			<fieldset name="PLG_SWISS_GENERATOR_TAG_REPLACEMENT_FIELDSET_LABEL">
-				<field name="generatorTagEnabled" type="radio" default="1" label="Enable tag change" description="When enabled this will allow you to edit or remove the generator metatag.">
+			<fieldset name="PLG_SWISS_GENERATOR_OG_TAG_REPLACEMENT_FIELDSET_LABEL">
+				<field name="generatorTagEnabled" type="radio" default="1" label="Enable generator tag change" description="When enabled this will allow you to edit or remove the generator metatag.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
                 <field name="metaGenerator" type="text" size="40" default="" label="Generator tag" description="A standard Joomla! install adds a Generator metatag to the site head. Here you can clear it or change it to something more meaningful to you. Leave the field empty to remove the tag entirely." />
+
+				<field type="spacer" name="s13" label="&lt;hr&gt;&lt;b&gt;Open Graph / Twitter meta settings:&lt;/b&gt;" description="Configure your meta tags here for page sharing"/>
+
+				<field name="ogTagEnabled" type="radio" default="0" label="Enable openGraph tags change" description="When enabled this will allow you to create OpenGraph tags on all pages of the site.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="twitterCard" type="list" default="summary_large_image" label="twitter:card" description="Select card type">
+					<option value="summary">summary</option>
+					<option value="summary_large_image">summary_large_image</option>
+					<option value="app">app</option>
+					<option value="player">player</option>
+				</field>
+				<field name="twitterTitle" type="list" default="auto" label="twitter:title" description="Choose Auto to create based on page settings">
+					<option value="auto">Auto</option>
+					<option value="autoDomain">Auto, prefixed with domain name</option>
+					<option value="">Off</option>
+				</field>
+				<field name="twitterDescription" type="list" default="auto" label="twitter:description" description="Choose Auto to create based on page settings, eg. if the page is an article it will use the article description (if present)">
+					<option value="auto">Auto</option>
+					<option value="">Off</option>
+				</field>
+                <field name="twitterSite" type="text" size="40" default="" label="twitter:site" description="@username for the website used in the card footer." />
+                <field name="twitterCreator" type="text" size="40" default="" label="twitter:creator" description="@username for the content creator / author." />
+				<field name="twitterImage" type="media" default="" directory="images" label="twitter:image" description="URL of image to use in the card. Images must be less than 5MB in size. JPG, PNG, WEBP and GIF formats are supported. Only the first frame of an animated GIF will be used. SVG is not supported." />
+                <field name="twitterImageAlt" type="textarea" rows="4" cols="40" default="" label="twitter:image:alt" description="A text description of the image conveying the essential nature of an image to users who are visually impaired. Maximum 420 characters." />
+				<field name="ogTitle" type="list" default="auto" label="og:title" description="Choose Auto to create based on page settings">
+					<option value="auto">Auto</option>
+					<option value="autoDomain">Auto, prefixed with domain name</option>
+					<option value="">Off</option>
+				</field>
+				<field name="ogUrl" type="list" default="auto" label="og:url" description="The URL of the content. Choose Auto to create based on page settings">
+					<option value="auto">Auto</option>
+					<option value="">Off</option>
+				</field>
+				<field name="ogType" type="list" default="auto" label="og:type" description="The type of your object, e.g., video.movie. Depending on the type you specify, other properties may also be required.">
+					<option value="auto">Auto</option>
+					<option value="">Off</option>
+				</field>
+				<field name="ogDescription" type="list" default="auto" label="og:description" description="A brief description of the content. Choose Auto to create based on page settings, eg. if the page is an article it will use the article description (if present)">
+					<option value="auto">Auto</option>
+					<option value="">Off</option>
+				</field>
+				<field name="ogImage" type="media" default="" directory="images" label="og:image" description="The URL of an image for the social snippet. The plugin will get width and height values and add those attributes automatically." />
+                <field name="ogImageAlt" type="textarea" rows="4" cols="40" default="" label="og:image:alt" description="A description of what is in the image (not a caption). If the page specifies an og:image it should specify og:image:alt" />
+				<field name="ogLocale" type="list" default="en_GB" label="og:locale" description="Defines the content language. Use only for content not written in American English (en_US). Facebook assumes content without this tag is written in this language.">
+					<option value="en_GB">en_GB</option>
+					<option value="">Off</option>
+				</field>
 			</fieldset>
 
 
@@ -248,7 +297,7 @@
 
 
 			<fieldset name="PLG_SWISS_ENABLE_ADMIN_LINK_IN_BACKEND_FIELDSET_LABEL">
-			<!-- <fieldset name="COM_PLUGINS_PLG_SWISS_GENERATOR_TAG_REPLACEMENT_FIELDSET_LABEL_FIELDSET_LABEL"> -->
+			<!-- <fieldset name="COM_PLUGINS_PLG_SWISS_GENERATOR_OG_TAG_REPLACEMENT_FIELDSET_LABEL_FIELDSET_LABEL"> -->
 				<field name="enableAdminLink" type="radio" default="1" label="Enable admin link" description="When enabled the admin icon/link in the top left of the Isis administrator template will never be disabled.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>

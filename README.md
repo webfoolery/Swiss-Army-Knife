@@ -31,6 +31,11 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 
 ## Changelog
 
+**2022-04-02**
+Version update 1.9
+Fixes a mistake in last version where hardcoded links to a specific site caused OpenGraph data for that site to be embedded into the plugin code. This meant that any sites with the plugin installed were displaying OG data for that site instead of its own OG data
+Adds a dedicated OpenGraph metadata editor for adding content to the `Generator` section
+
 **2022-01-12**  
 Version update: 1.8  
 Fixes issue when adding custom code immediately after opening `<head>` tag (code was placed before the tag)

@@ -206,6 +206,7 @@ class plgSystemSwiss extends JPlugin {
 		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
 		$doc = JFactory::getDocument();
 		$user = JFactory::getUser();
+		$config = JFactory::getConfig();
 		
 		// APPLY THE SESSION KEEPALIVE OR SESSION END ALERT IF NEEDED
 		if (!$user->guest) {
@@ -224,7 +225,6 @@ class plgSystemSwiss extends JPlugin {
 				else if($this->params->get('enableSessionEndAlert', 0) != false && array_intersect($this->params->get('sessionEndAlertUsergroup', array()), $user->groups)) {
 					$alertType = $this->params->get('enableSessionEndAlert', 'modal');
 					// exit($alertType);
-					$config = JFactory::getConfig();
 					$sessionTime = $config->get('lifetime');
 					// $sessionTime = 3; // FOR TESTING
 					$alertTime = $this->params->get('sessionEndStartTime', 120);
@@ -332,18 +332,46 @@ JAVASCRIPT;
 			$doc->setGenerator($this->params->get('metaGenerator'));
 			
 // CS EDIT 2020-07-14 TO SHOEHORN IN THE OG DATA
-$doc->setMetaData('twitter:card', 'summary_large_image', 'name');
-$doc->setMetaData('twitter:title', $doc->getTitle(), 'name');
-$doc->setMetaData('twitter:description', $doc->getDescription(), 'name');
-$doc->setMetaData('twitter:site', '@TeachingMentor', 'name');
-$doc->setMetaData('twitter:creator', '@TeachingMentor', 'name');
-$doc->setMetaData('twitter:image', 'https://essentialteaching.uk/images/essential/logos/logo-essential-uk-social.png', 'name');
-$doc->setMetaData('og:title', $doc->getTitle(), 'property');
-$doc->setMetaData('og:url', JUri::getInstance()->toString(), 'property');
-$doc->setMetaData('og:type', 'website', 'property');
-$doc->setMetaData('og:description', $doc->getDescription(), 'property');
-$doc->setMetaData('og:image', 'https://essentialteaching.uk/images/essential/logos/logo-essential-uk-social.png', 'property');
-$doc->setMetaData('og:locale', 'en_GB', 'property');
+		}
+		
+		// CREATE TWITTER / OPENGRAPH TAGS
+		if ($this->params->get('ogTagEnabled', false) == 1) {
+			$twitterCard = $this->params->get('twitterCard', false);
+			$twitterTitle = $this->params->get('twitterTitle', false);
+			$twitterDescription = $this->params->get('twitterCard', false);
+			$twitterSite = $this->params->get('twitterSite', false);
+			$twitterCreator = $this->params->get('twitterCreator', false);
+			$twitterImage = $this->params->get('twitterImage', false);
+			$ogTitle = $this->params->get('ogTitle', false);
+			$ogUrl = $this->params->get('ogUrl', false);
+			$ogType = $this->params->get('ogType', false);
+			$ogDescription = $this->params->get('ogDescription', false);
+			$ogImage = $this->params->get('ogImage', false);
+			$ogLocale = $this->params->get('ogLocale', false);
+			if ($twitterCard) $doc->setMetaData('twitter:card', $twitterCard, 'name');
+			if ($twitterTitle && $twitterTitle == 'auto') $doc->setMetaData('twitter:title', $doc->getTitle(), 'name');
+			if ($twitterTitle && $twitterTitle == 'autoDomain') $doc->setMetaData('twitter:title', $config->get('sitename').' | '.$doc->getTitle(), 'name');
+			if ($twitterDescription) $doc->setMetaData('twitter:description', $doc->getDescription(), 'name');
+			if ($twitterSite) $doc->setMetaData('twitter:site', $twitterSite, 'name');
+			if ($twitterCreator) $doc->setMetaData('twitter:creator', $twitterCreator, 'name');
+			if ($twitterImage) {
+				$doc->setMetaData('twitter:image', JUri::getInstance()->base().$twitterImage, 'name');
+				if ($twitterImageAlt = $this->params->get('twitterImageAlt', false)) $doc->setMetaData('twitter:image:alt', $twitterImageAlt, 'name');
+			}
+			if ($ogTitle && $ogTitle == 'auto') $doc->setMetaData('og:title', $doc->getTitle(), 'property');
+			if ($ogTitle && $ogTitle == 'autoDomain') $doc->setMetaData('og:title', $config->get('sitename').' | '.$doc->getTitle(), 'property');
+			if ($ogUrl) $doc->setMetaData('og:url', JUri::getInstance()->toString(), 'property');
+			if ($ogType) $doc->setMetaData('og:type', 'website', 'property');
+			if ($ogDescription) $doc->setMetaData('og:description', $doc->getDescription(), 'property');
+			if ($ogImage) {
+				$doc->setMetaData('og:image', JUri::getInstance()->base().$ogImage, 'property');
+				$image_info = getimagesize($ogImage);
+				$doc->setMetaData('og:image:width', $image_info[0], 'property');
+				$doc->setMetaData('og:image:height', $image_info[1], 'property');
+				$doc->setMetaData('og:image:type', $image_info['mime'], 'property');
+				if ($ogImageAlt = $this->params->get('ogImageAlt', false)) $doc->setMetaData('og:image:alt', $ogImageAlt, 'property');
+			}
+			if ($ogLocale) $doc->setMetaData('og:locale', $ogLocale, 'property');
 		}
 		
 		// ADD CSS FOR COOKIE DIRECTIVE IF NEEDED
