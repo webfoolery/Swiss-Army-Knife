@@ -2,12 +2,12 @@
 <extension version="2.5" type="plugin" group="system">
 	<name>System - Swiss Army Knife</name>
 	<author>Chris Sheridan</author>
-	<creationDate>2021-05-22</creationDate>
-	<copyright>Copyright (C) 2104 webfoolery. All rights reserved.</copyright>
+	<creationDate>2023-02-17</creationDate>
+	<copyright>Copyright (C) 2023 webfoolery. All rights reserved.</copyright>
 	<license>GNU General Public License</license>
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
-	<version>1.9.0</version>
+	<version>4.0.0</version>
 	<updateservers>
 		<server type="extension" name="Swiss Army Knife" priority="1">https://webfoolery.com/downloads/joomla/plgSysSwiss_update.xml</server>
 	</updateservers>
@@ -36,6 +36,14 @@
 				<field name="allowedIpAddresses" type="textarea" rows="4" cols="40" default="" label="Allowed IPs" description="When the site is offline you can restore normal access to specified IP addresses. Enter each IP address on a new line, eg:&lt;br /&gt;12.122.243.12&lt;br /&gt;216.79.56.167" />
                 <field name="offlineRedirectUrl" type="text" size="50" default="" label="Redirect URL" description="When the site is offline you can redirect visitors to any URL. Enter the full URL here, eg. http://mysite.com/offline.html" />
 				<field name="offlineHTML" type="textarea" rows="4" cols="40" filter="raw" default="" label="HTML" description="If you take the site offline you can add your own HTML here that will be displayed instead of the normal website." />
+			</fieldset>
+
+
+			<fieldset name="PLG_SWISS_ENABLE_ADMIN_LINK_IN_BACKEND_FIELDSET_LABEL">
+				<field name="enableAdminLink" type="radio" default="1" label="Enable admin link" description="When enabled the admin icon/link in the top left of the standard administrator template will never be disabled.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
 			</fieldset>
 
 
@@ -135,14 +143,8 @@
 					<option value="message">Message</option>
 					<option value="warning">Warning</option>
 					<option value="error">Error</option>
-					<!--<option value="1">Yes</option>-->
 				</field>
 				<field name="afterLoginSystemMessage" type="textarea" rows="2" cols="40" default="" label="Login message" description="A message to display to users to after a successful login (System message after login must be enabled!)" />
-				<!--<field name="afterLoginSystemMessageType" type="radio" default="message" label="Message type" description="Choose whether your message is marked as a message, a warning or an error (different styles will be applied by the template).">
-					<option value="message">Message</option>
-					<option value="warning">Warning</option>
-					<option value="error">Error</option>
-				</field>-->
 				
 				<field type="spacer" name="s2" hr="true" />
 				
@@ -150,8 +152,7 @@
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="afterLoginRedirectUsergroup" type="usergroup" label="Group/s to redirect on login"  size="10" description="Select which usergroup/s to redirect  on login. " multiple="true" />
-				<!--<field name="afterLoginRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Login redirect URL" description="A URL to redirect users to after a successful login (leave empty to disable)" />-->
+				<field name="afterLoginRedirectUsergroup" type="Usergrouplist" label="Group/s to redirect on login"  size="10" description="Select which usergroup/s to redirect  on login. " multiple="true" />
 				<field name="afterLoginRedirectUrl" type="menuitem" default="" label="Login redirect page" description="A page to redirect users from the selected group/s to after a successful login." />
 				
 				<field type="spacer" name="s3" hr="true" />
@@ -160,8 +161,7 @@
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="afterLogOutRedirectUsergroup" type="usergroup" default="2" label="Group/s to redirect on logout"  size="10" description="Select which usergroup/s to redirect on log out. " multiple="true" />
-				<!--<field name="afterLogOutRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Logout redirect URL" description="A URL to redirect users to after logout (leave empty to disable)" />-->
+				<field name="afterLogOutRedirectUsergroup" type="Usergrouplist" default="2" label="Group/s to redirect on logout"  size="10" description="Select which usergroup/s to redirect on log out. " multiple="true" />
 				<field name="afterLogOutRedirectUrl" type="menuitem" default="" label="Logout redirect page" description="A page to redirect users to after logout." />
 				
 				<field type="spacer" name="s7" hr="true" />
@@ -176,41 +176,8 @@
 					<option value="warning">Warning</option>
 					<option value="error">Error</option>
 				</field>
-				<!--<field name="failedLoginHideSystemMessage" type="text" size="40" default="Username and password do not match" label="Hide default message" description="if you enter a part of the string of the default failed login message here the default message will be removed from th the message queue (leave empty to disable)" />-->
-				<!--<field name="failedLoginRedirectUrl" type="textarea" rows="2" cols="40" default="" label="Failed login redirect URL" description="A URL to redirect users to after a failed login (leave empty to disable)" />-->
 				<field name="failedLoginRedirectUrl" type="menuitem" default="" label="Failed login redirect page" description="A page to redirect users to after a failed login." />
 				<field name="failedLoginDelay" type="text" default="0" label="Retry delay" description="Enter just a number which will be the number of seconds that the system will delay subsequent login attempts by (set it to zero to disable)" />
-			</fieldset>
-			
-				
-			<fieldset name="PLG_SWISS_SESSION_MANAGER_LABEL" addfieldpath="plugins/system/swiss/fields">
-				<field name="enableKeepAliveAllPages" type="radio" default="0" label="Enable session keep alive" description="When enabled you can specify which user groups will be able to stay logged in even after long periods of page inactivity. The plugin will add a small javascript snippet that will invisibly open a page via AJAX before the user is logged out in order to maintain the session.&lt;br /&gt;&lt;b&gt;NB:&lt;/b&gt; Joomla automatically addes a keepAlive script to any pages that have a login module, so even with this feature disabled in the plugin you may find some of your pages display keepAlive behaviour!">
-					<option value="0">No</option>
-					<option value="1">Yes</option>
-				</field>
-				<field name="keepaliveUsergroup" type="usergroup" default="" label="Group/s to keep alive"  size="10" description="Select which usergroup/s to apply the keep alive session to. " multiple="true" />
-				
-				<field type="spacer" name="s4" hr="true" />
-				
-				<field name="enableSessionEndAlert" type="radio" default="0" label="Session end warning" description="When enabled you can specify which user groups will be alerted before their session times out. Users within the selected usergroup will be alerted before session end and offered choices allowing them to choose to refresh the session or allow it to end.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;Modal&lt;/b&gt; provides a modal window popup which is a bit prettier and has more configurable options (below). &lt;br /&gt;&lt;b&gt;Alert&lt;/b&gt; gives a Javascript alert which has the added bonus that on most systems it will pull user focus back to the window.&lt;br /&gt;&lt;br /&gt;Both options offer users the choice to refresh the session or allow it to expire.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;NB:&lt;/b&gt; Joomla automatically adds a keepAlive script to any pages that have a login module, and if you have enabled keepAlive in this plugin it would be pointless to alert the user if the session is ending (as it will not end!) so in those circumstances the alert will not be sent.">
-					<option value="0">Off</option>
-					<option value="modal">Modal</option>
-					<option value="alert">JS Alert</option>
-				</field>
-				<field name="sessionEndTestMode" type="radio" default="0" label="Activate test mode" description="When enabled you will receive the session end alert after 5 seconds and the logged out message 10 seconds later (though you will not be logged out until the session really ends). This could help you tweak styles etc. a bit faster than waiting for an actual session to timeout!">
-					<option value="0">Off</option>
-					<option value="1">On</option>
-				</field>
-				<!--<field name="sessionEndAlertType" type="radio" default="modal" label="Alert type" description="Choose how your users will be alerted when the session is nearing expiry.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;Modal&lt;/b&gt; provides a modal window popup which looks nicer. &lt;br /&gt;&lt;b&gt;Alert&lt;/b&gt; gives a Javascript alert which will pull user focus back to the window.&lt;br /&gt;&lt;br /&gt;Both options offer users the choice to refresh the session or allow it to expire.">
-					<option value="modal">Modal window</option>
-					<option value="alert">Javascript alert</option>
-				</field>-->
-                <field name="sessionEndStartTime" type="text" label="Alert time (seconds)" size="20" default="120" description="The amount of time (in seconds) before the session ends that you wish to alert users. Your total session time is set in your Joomla config, so if that is set to 15 and you enter 180 here the alert will pop up after 12 minutes of inactivity." />
-				<field name="sessionEndAlertUsergroup" type="usergroup" label="Group/s to warn" default="" size="10" description="Select which usergroup/s to apply the session end alert to. " multiple="true" />
-				<field name="sessionEndAlertModalText" type="textarea" label="Modal alert message" rows="4" cols="40" filter="raw" default="&lt;p class=&quot;sessionEndWarningText&quot;&gt;Your user session has been inactive and you will be logged out automatically in {countdown}&lt;/p&gt;" description="A message that will appear in the modal box (if selected) before the session ends. Use a placeholder {countdown} to show a m:ss countdown timer. You can use HTML here." />
-				<field name="sessionEndAlertModalSize" type="widthheight" label="Modal warning size" default="400x150" size="4" description="The width and height of the modal alert box that tells users that their session will soon be ending." />
-				<field name="sessionEndedModalText" type="textarea" label="Modal session end message" rows="4" cols="40" filter="raw" default="&lt;p class=&quot;sessionEndExpiredText&quot;&gt;Your session has ended. You will have to log in again to continue.&lt;/p&gt;" description="A message that will appear in the modal box (if selected) after the session ends. You can use HTML here." />
-				<field name="sessionEndedModalSize" type="widthheight" label="Modal ended size" default="200x100" size="4" description="The width and height of the modal alert box that tells users that their session has ended." />
 			</fieldset>
 			
 			
@@ -219,17 +186,17 @@
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="registeredUserHomeGroup1" type="usergroup" default="2" label="Group/s"  size="10" description="Select the usergroup/s whose home page you will set below. " multiple="true" />
+				<field name="registeredUserHomeGroup1" type="Usergrouplist" default="2" label="Group/s"  size="10" description="Select the usergroup/s whose home page you will set below. " multiple="true" />
 				<field name="registeredUserHomeUrl1" type="menuitem" default="" label="New homepage" description="The menu item you select will become the home page for any registered users selected in the group above." />
 				
 				<field type="spacer" name="s9" hr="true" />
 				
-				<field name="registeredUserHomeGroup2" type="usergroup" default="2" label="Group/s"  size="10" description="Select the usergroup/s whose home page you will set below. " multiple="true" />
+				<field name="registeredUserHomeGroup2" type="Usergrouplist" default="2" label="Group/s"  size="10" description="Select the usergroup/s whose home page you will set below. " multiple="true" />
 				<field name="registeredUserHomeUrl2" type="menuitem" default="" label="New homepage" description="The menu item you select will become the home page for any registered users selected in the group above." />
 				
 				<field type="spacer" name="s10" hr="true" />
 				
-				<field name="registeredUserHomeGroup3" type="usergroup" default="2" label="Group/s"  size="10" description="Select the usergroup/s whose home page you will set below. " multiple="true" />
+				<field name="registeredUserHomeGroup3" type="Usergrouplist" default="2" label="Group/s"  size="10" description="Select the usergroup/s whose home page you will set below. " multiple="true" />
 				<field name="registeredUserHomeUrl3" type="menuitem" default="" label="New homepage" description="The menu item you select will become the home page for any registered users selected in the group above." />
 			</fieldset>
 			
@@ -275,7 +242,7 @@
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
-				<field name="debugUsergroup" type="usergroup" label="Limit by usergroup" description="Limit debug output to specified user group/s." multiple="true" size="10" />
+				<field name="debugUsergroup" type="Usergrouplist" label="Limit by usergroup" description="Limit debug output to specified user group/s." multiple="true" size="10" />
 				<field name="debugIpAddress" type="text" default="" label="Limit by IP" description="Limit debug output to specified IP address."/>
 				<field name="profile" type="radio" default="1" label="Show Profiling" description="Display the profiling waypoints">
 					<option value="1">Yes</option>
@@ -294,14 +261,32 @@
 					<option value="0">No</option>
 				</field>
 			</fieldset>
-
-
-			<fieldset name="PLG_SWISS_ENABLE_ADMIN_LINK_IN_BACKEND_FIELDSET_LABEL">
-			<!-- <fieldset name="COM_PLUGINS_PLG_SWISS_GENERATOR_OG_TAG_REPLACEMENT_FIELDSET_LABEL_FIELDSET_LABEL"> -->
-				<field name="enableAdminLink" type="radio" default="1" label="Enable admin link" description="When enabled the admin icon/link in the top left of the Isis administrator template will never be disabled.">
+			
+				
+			<fieldset name="PLG_SWISS_SESSION_MANAGER_LABEL" addfieldpath="plugins/system/swiss/fields">
+				<field name="enableKeepAliveAllPages" type="radio" default="0" label="Enable session keep alive" description="When enabled you can specify which user groups will be able to stay logged in even after long periods of page inactivity. The plugin will add a small javascript snippet that will invisibly open a page via AJAX before the user is logged out in order to maintain the session.&lt;br /&gt;&lt;b&gt;NB:&lt;/b&gt; Joomla automatically addes a keepAlive script to any pages that have a login module, so even with this feature disabled in the plugin you may find some of your pages display keepAlive behaviour!">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
+				<field name="keepaliveUsergroup" type="Usergrouplist" default="" label="Group/s to keep alive"  size="10" description="Select which usergroup/s to apply the keep alive session to. " multiple="true" />
+				
+				<field type="spacer" name="s4" hr="true" />
+				
+				<field name="enableSessionEndAlert" type="radio" default="0" label="Session end warning" description="When enabled you can specify which user groups will be alerted before their session times out. Users within the selected usergroup will be alerted before session end and offered choices allowing them to choose to refresh the session or allow it to end.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;Modal&lt;/b&gt; provides a modal window popup which is a bit prettier and has more configurable options (below). &lt;br /&gt;&lt;b&gt;Alert&lt;/b&gt; gives a Javascript alert which has the added bonus that on most systems it will pull user focus back to the window.&lt;br /&gt;&lt;br /&gt;Both options offer users the choice to refresh the session or allow it to expire.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;NB:&lt;/b&gt; Joomla automatically adds a keepAlive script to any pages that have a login module, and if you have enabled keepAlive in this plugin it would be pointless to alert the user if the session is ending (as it will not end!) so in those circumstances the alert will not be sent.">
+					<option value="0">Off</option>
+					<option value="modal">Modal</option>
+					<option value="alert">JS Alert</option>
+				</field>
+				<field name="sessionEndTestMode" type="radio" default="0" label="Activate test mode" description="When enabled you will receive the session end alert after 5 seconds and the logged out message 10 seconds later (though you will not be logged out until the session really ends). This could help you tweak styles etc. a bit faster than waiting for an actual session to timeout!">
+					<option value="0">Off</option>
+					<option value="1">On</option>
+				</field>
+                <field name="sessionEndStartTime" type="text" label="Alert time (seconds)" size="20" default="120" description="The amount of time (in seconds) before the session ends that you wish to alert users. Your total session time is set in your Joomla config, so if that is set to 15 and you enter 180 here the alert will pop up after 12 minutes of inactivity." />
+				<field name="sessionEndAlertUsergroup" type="Usergrouplist" label="Group/s to warn" default="" size="10" description="Select which usergroup/s to apply the session end alert to. " multiple="true" />
+				<field name="sessionEndAlertModalText" type="textarea" label="Modal alert message" rows="4" cols="40" filter="raw" default="&lt;p class=&quot;sessionEndWarningText&quot;&gt;Your user session has been inactive and you will be logged out automatically in {countdown}&lt;/p&gt;" description="A message that will appear in the modal box (if selected) before the session ends. Use a placeholder {countdown} to show a m:ss countdown timer. You can use HTML here." />
+				<field name="sessionEndAlertModalSize" type="widthheight" label="Modal warning size" default="400x150" size="4" description="The width and height of the modal alert box that tells users that their session will soon be ending." />
+				<field name="sessionEndedModalText" type="textarea" label="Modal session end message" rows="4" cols="40" filter="raw" default="&lt;p class=&quot;sessionEndExpiredText&quot;&gt;Your session has ended. You will have to log in again to continue.&lt;/p&gt;" description="A message that will appear in the modal box (if selected) after the session ends. You can use HTML here." />
+				<field name="sessionEndedModalSize" type="widthheight" label="Modal ended size" default="200x100" size="4" description="The width and height of the modal alert box that tells users that their session has ended." />
 			</fieldset>
 		</fields>
 	</config>

@@ -30,6 +30,12 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 * **Force enable admin link** In newer Joomla! versions (3+ I think) the icon link to the `/administrator` page in the top left of the administrator area becomes disabled when you are inside an extension or setting. This will allow that to always be active, so if you need another admin page It's simple to middle click it to open another one.
 
 ## Changelog  
+
+**2023-02-19**
+Version update 4.0.0
+Code modifications to make the plugin suitable to Joomla!4.x
+Improvements to the OpenGraph & Twitter metadata. They are now only injected if they don'e exist, so other components can set them more accurately if needed
+
 **2022-04-02**  
 Version update 1.9  
 Fixes a mistake in last version where hardcoded links to a specific site caused OpenGraph data for that site to be embedded into the plugin code. This meant that any sites with the plugin installed were displaying OG data for that site instead of its own OG data  

@@ -1,6 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.plugin.plugin' );
+use Joomla\CMS\HTML\HTMLHelper;
 // require_once(JPATH_SITE.DS.'/components/com_swiss/swissHelper.php');
 
 // TODO:: onUserAfterSave AUTO LOGIN NOT WORKING (MAY NEED TO BE IN USER PLUGIN?)
@@ -24,7 +25,7 @@ class plgSystemSwiss extends JPlugin {
 		
 		if ($this->params->get('debugOutputEnabled', 0) == 1 && $this->params->get('queries', 0) == 1) {
 			// ENABLE THE LOGGING OF QUERIES 
-			if (JFactory::getApplication()->isAdmin() == false) {
+			if (JFactory::getApplication()->isClient('administrator') == false) {
 				JFactory::getDbo()->setDebug(true);
 				$this->logDB = true;
 			}
@@ -75,7 +76,7 @@ class plgSystemSwiss extends JPlugin {
 
 	function onAfterInitialise() {
 		$app = JFactory::getApplication();
-		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
+		if ($app->isClient('administrator')) return; // DO NOT RUN IN ADMIN AREA
 		$user = JFactory::getUser();
 		$siteOffline = $this->params->get('siteOfflineEnabled', 0);
 		if ($siteOffline != '0' && strpos($this->params->get('allowedIpAddresses'), $_SERVER['REMOTE_ADDR']) === false) $this->siteOffline($siteOffline);
@@ -89,15 +90,13 @@ class plgSystemSwiss extends JPlugin {
 			$redirectUrl = $this->params->get('offlineRedirectUrl');
 			$app = JFactory::getApplication();
 			$app->redirect($redirectUrl);
-			// return;
-			// header('Location: '.$redirectUrl);
 		}
 		exit();
 	}
 
  	function onAfterRoute() {
 		$app = JFactory::getApplication();
-		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
+		if ($app->isClient('administrator')) return; // DO NOT RUN IN ADMIN AREA
 		$user = JFactory::getUser();
 		$jinput = $app->input;
 		
@@ -106,14 +105,13 @@ class plgSystemSwiss extends JPlugin {
 			if ($jinput->get('option') == 'com_users' && $jinput->get('task') == 'user.login') {
 				$afterLoginRedirectUsergroup = (array)$this->params->get('afterLoginRedirectUsergroup', null);
 				$afterLoginRedirectUrl = $this->params->get('afterLoginRedirectUrl', '');
-// echo 'index.php?Itemid='.$afterLoginRedirectUrl;exit;
 				// USER IS NOT YET LOGGED IN SO WE NEED TO CHECK GROUPS OURSELF...
 				$db = JFactory::getDbo();
 				$db->setQuery("SELECT id FROM #__users WHERE username = '".$jinput->get('username')."'");
 				if ($userId = $db->loadResult()) {
 					$notLoggedInUser = JFactory::getUser($userId);
 					if (array_intersect($afterLoginRedirectUsergroup, $notLoggedInUser->groups)) {
-						JRequest::setVar('return', base64_encode('index.php?Itemid='.$afterLoginRedirectUrl));
+						$jinput->set('return', base64_encode('index.php?Itemid='.$afterLoginRedirectUrl));
 					}
 				}
 			}
@@ -128,7 +126,6 @@ class plgSystemSwiss extends JPlugin {
 					// USER IS IN AT LEAST 1 OF THE SPECIFIED GROUPS
 					if ($this->params->get('oneClickLogoutEnabled', false) != 1) {
 						$app->logout($user->id); // LOG THE USER OUT
-						// $app->redirect($afterLogOutRedirectUrl);
 						$app->redirect(JRoute::_('index.php?Itemid='.$afterLogOutRedirectUrl, false));
 					}
 					else $return = $afterLogOutRedirectUrl;
@@ -139,7 +136,7 @@ class plgSystemSwiss extends JPlugin {
 				$error = $app->logout();
 				if (!($error instanceof Exception)) {
 					if (!isset($return)) {
-						$return = JRequest::getVar('return', '', 'method', 'base64');
+						$return = $jinput->get('return', '', 'BASE64');
 						$return = base64_decode($return);
 						if (!JURI::isInternal($return)) $return = '';
 					}
@@ -153,7 +150,7 @@ class plgSystemSwiss extends JPlugin {
 		
 		// REDIRECT HOME PAGE FOR REGISTERED USERS
 		if ($this->params->get('registeredUserHomepageEnabled', false) == 1) {
-			$task = JRequest::getVar('task', false);
+			$task = $jinput->get('task', false);
 			if ($user->guest || $task=='user.logout') return;
 			$registeredUserHomeGroup1 = $this->params->get('registeredUserHomeGroup1', false);
 			$registeredUserHomeGroup2 = $this->params->get('registeredUserHomeGroup2', false);
@@ -175,7 +172,8 @@ class plgSystemSwiss extends JPlugin {
 		/* When this event is triggered the output of the application is available in the response buffer. */
 		$app = JFactory::getApplication();
 		if ($this->params->get('enableAdminLink', false) == 1) $this->enableAdminLink();
-		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
+		if ($app->isClient('administrator')) return; // DO NOT RUN IN ADMIN AREA
+		if ($app->input->get('option') == 'com_ajax') return; // DON'T MESS WITH THE AJAX STUFF (BREAKS KEEPALIVE & MORE)
 		if ($this->params->get('replaceAnywhereEnabled', false) == 1) $this->replaceContentAnywhere();
 		if ($this->params->get('cookieDirectiveEnabled', false) == 1) $this->cookieDirective();
 		
@@ -185,7 +183,7 @@ class plgSystemSwiss extends JPlugin {
 			$insertBodyEnd = $this->params->get('bodyEnd', '');
 			$insertHeadStart = $this->params->get('headStart', '');
 			$insertHeadEnd = $this->params->get('headEnd', '');
-			$buffer = JResponse::getBody();
+			$buffer = JFactory::getApplication()->getBody();
 			if (strlen($insertBodyStart)) {
 				// NEED TO BE CLEVER FOR THIS INSERT AS BODY CAN HAVE EXTRA ELEMENTS
 				$bodyTagEndPosition = strpos($buffer, ">", strpos($buffer, "<body")) + 1;
@@ -196,14 +194,14 @@ class plgSystemSwiss extends JPlugin {
 			if (strlen($insertBodyEnd)) $buffer = str_replace('</body>', $insertBodyEnd.'</body>', $buffer);
 			if (strlen($insertHeadStart)) $buffer = str_replace('<head>', '<head>'.$insertHeadStart, $buffer);
 			if (strlen($insertHeadEnd)) $buffer = str_replace('</head>', $insertHeadEnd.'</head>', $buffer);
-			JResponse::setBody($buffer);
+			JFactory::getApplication()->setBody($buffer);
 		}
 		return true;
 	}
 
 	function onBeforeCompileHead() {
 		$app = JFactory::getApplication();
-		if ($app->isAdmin()) return; // DO NOT RUN IN ADMIN AREA
+		if ($app->isClient('administrator')) return; // DO NOT RUN IN ADMIN AREA
 		$doc = JFactory::getDocument();
 		$user = JFactory::getUser();
 		$config = JFactory::getConfig();
@@ -215,16 +213,16 @@ class plgSystemSwiss extends JPlugin {
 			// echo "<pre>";echo $this->pp($doc->_script);echo "</pre>";
 			if (strpos($activeScripts, 'function keepAlive') !== false) $keepAliveActive = true; // J!2.5 CHECK
 			if (strpos($activeScripts, '{r.open("GET","./",true);r.send(null)}') !== false) $keepAliveActive = true; // J!3.x CHECK
+			if (strpos($activeScripts, 'system.keepalive') !== false) $keepAliveActive = true; // J!4 CHECK
 			if (!$keepAliveActive) {
 				if ($this->params->get('enableKeepAliveAllPages', false) == 1) {
-					// echo $this->pp($this->params->get('keepaliveUsergroup'));
 					if (count($this->params->get('keepaliveUsergroup', array())) == 0 || array_intersect($this->params->get('keepaliveUsergroup', array()), $user->groups)) {
-						JHtml::_('behavior.keepalive');
+						// JHtml::_('behavior.keepalive');
+						HTMLHelper::_('behavior.keepalive');
 					}
 				}
 				else if($this->params->get('enableSessionEndAlert', 0) != false && array_intersect($this->params->get('sessionEndAlertUsergroup', array()), $user->groups)) {
 					$alertType = $this->params->get('enableSessionEndAlert', 'modal');
-					// exit($alertType);
 					$sessionTime = $config->get('lifetime');
 					// $sessionTime = 3; // FOR TESTING
 					$alertTime = $this->params->get('sessionEndStartTime', 120);
@@ -250,7 +248,6 @@ class plgSystemSwiss extends JPlugin {
 					}
 					else {
 						JHtml::_('behavior.modal');
-						// $alertText = '<p style="text-align:center;padding:10px;">Your user session has been inactive and you will be logged out automatically in a few minutes.<br /><br /><button type="button" id="allowMaintainSession" onclick="keepSessionAlive();window.parent.SqueezeBox.close();">Keep me logged in</button><button type="button" id="allowExpireSession" onclick="window.parent.SqueezeBox.close();">Allow my session to end</button></p>';
 						$alertText = $this->params->get('sessionEndAlertModalText', '<p class="sessionEndWarningText">Your user session has been inactive and you will be logged out automatically in {countdown}');
 						$sessionEndedModalText = $this->params->get('sessionEndedModalText', '<p class="sessionEndExpiredText">Your session has ended. You will have to log in again to continue.</p>');
 						$sessionEndAlertModalSize = $this->params->get('sessionEndAlertModalSize', '400x150');
@@ -330,49 +327,10 @@ JAVASCRIPT;
 		// FIX THE GENERATOR METATAG
 		if ($this->params->get('generatorTagEnabled', false) == 1) {
 			$doc->setGenerator($this->params->get('metaGenerator'));
-			
-// CS EDIT 2020-07-14 TO SHOEHORN IN THE OG DATA
 		}
 		
 		// CREATE TWITTER / OPENGRAPH TAGS
-		if ($this->params->get('ogTagEnabled', false) == 1) {
-			$twitterCard = $this->params->get('twitterCard', false);
-			$twitterTitle = $this->params->get('twitterTitle', false);
-			$twitterDescription = $this->params->get('twitterCard', false);
-			$twitterSite = $this->params->get('twitterSite', false);
-			$twitterCreator = $this->params->get('twitterCreator', false);
-			$twitterImage = $this->params->get('twitterImage', false);
-			$ogTitle = $this->params->get('ogTitle', false);
-			$ogUrl = $this->params->get('ogUrl', false);
-			$ogType = $this->params->get('ogType', false);
-			$ogDescription = $this->params->get('ogDescription', false);
-			$ogImage = $this->params->get('ogImage', false);
-			$ogLocale = $this->params->get('ogLocale', false);
-			if ($twitterCard) $doc->setMetaData('twitter:card', $twitterCard, 'name');
-			if ($twitterTitle && $twitterTitle == 'auto') $doc->setMetaData('twitter:title', $doc->getTitle(), 'name');
-			if ($twitterTitle && $twitterTitle == 'autoDomain') $doc->setMetaData('twitter:title', $config->get('sitename').' | '.$doc->getTitle(), 'name');
-			if ($twitterDescription) $doc->setMetaData('twitter:description', $doc->getDescription(), 'name');
-			if ($twitterSite) $doc->setMetaData('twitter:site', $twitterSite, 'name');
-			if ($twitterCreator) $doc->setMetaData('twitter:creator', $twitterCreator, 'name');
-			if ($twitterImage) {
-				$doc->setMetaData('twitter:image', JUri::getInstance()->base().$twitterImage, 'name');
-				if ($twitterImageAlt = $this->params->get('twitterImageAlt', false)) $doc->setMetaData('twitter:image:alt', $twitterImageAlt, 'name');
-			}
-			if ($ogTitle && $ogTitle == 'auto') $doc->setMetaData('og:title', $doc->getTitle(), 'property');
-			if ($ogTitle && $ogTitle == 'autoDomain') $doc->setMetaData('og:title', $config->get('sitename').' | '.$doc->getTitle(), 'property');
-			if ($ogUrl) $doc->setMetaData('og:url', JUri::getInstance()->toString(), 'property');
-			if ($ogType) $doc->setMetaData('og:type', 'article', 'property');
-			if ($ogDescription) $doc->setMetaData('og:description', $doc->getDescription(), 'property');
-			if ($ogImage) {
-				$doc->setMetaData('og:image', JUri::getInstance()->base().$ogImage, 'property');
-				$image_info = getimagesize($ogImage);
-				$doc->setMetaData('og:image:width', $image_info[0], 'property');
-				$doc->setMetaData('og:image:height', $image_info[1], 'property');
-				$doc->setMetaData('og:image:type', $image_info['mime'], 'property');
-				if ($ogImageAlt = $this->params->get('ogImageAlt', false)) $doc->setMetaData('og:image:alt', $ogImageAlt, 'property');
-			}
-			if ($ogLocale) $doc->setMetaData('og:locale', $ogLocale, 'property');
-		}
+		if ($this->params->get('ogTagEnabled', false) == 1) $this->addOpenGraphTags();
 		
 		// ADD CSS FOR COOKIE DIRECTIVE IF NEEDED
 		if ($this->params->get('cookieDirectiveEnabled', false) == 1) {
@@ -407,9 +365,50 @@ JAVASCRIPT;
 		}
 	}
 	
+	public function addOpenGraphTags() {
+		$doc = JFactory::getDocument();
+		$config = JFactory::getConfig();
+		$twitterCard = $this->params->get('twitterCard', false);
+		$twitterTitle = $this->params->get('twitterTitle', false);
+		$twitterDescription = $this->params->get('twitterCard', false);
+		$twitterSite = $this->params->get('twitterSite', false);
+		$twitterCreator = $this->params->get('twitterCreator', false);
+		$twitterImage = $this->params->get('twitterImage', false);
+		$ogTitle = $this->params->get('ogTitle', false);
+		$ogUrl = $this->params->get('ogUrl', false);
+		$ogType = $this->params->get('ogType', false);
+		$ogDescription = $this->params->get('ogDescription', false);
+		$ogImage = $this->params->get('ogImage', false);
+		$ogLocale = $this->params->get('ogLocale', false);
+		if ($twitterCard && !$doc->getMetaData('twitter:card')) $doc->setMetaData('twitter:card', $twitterCard, 'name');
+		if ($twitterTitle && !$doc->getMetaData('twitter:title') && $twitterTitle == 'auto') $doc->setMetaData('twitter:title', $doc->getTitle(), 'name');
+		if ($twitterTitle && !$doc->getMetaData('twitter:title') && $twitterTitle == 'autoDomain') $doc->setMetaData('twitter:title', $config->get('sitename').' | '.$doc->getTitle(), 'name');
+		if ($twitterDescription && !$doc->getMetaData('twitter:description')) $doc->setMetaData('twitter:description', $doc->getDescription(), 'name');
+		if ($twitterSite && !$doc->getMetaData('twitter:site')) $doc->setMetaData('twitter:site', $twitterSite, 'name');
+		if ($twitterCreator && !$doc->getMetaData('twitter:creator')) $doc->setMetaData('twitter:creator', $twitterCreator, 'name');
+		if ($twitterImage && !$doc->getMetaData('twitter:image')) {
+			$doc->setMetaData('twitter:image', JUri::getInstance()->base().$twitterImage, 'name');
+			if ($twitterImageAlt = $this->params->get('twitterImageAlt', false)) $doc->setMetaData('twitter:image:alt', $twitterImageAlt, 'name');
+		}
+		if ($ogTitle && !$doc->getMetaData('og:title') && $ogTitle == 'auto') $doc->setMetaData('og:title', $doc->getTitle(), 'property');
+		if ($ogTitle && !$doc->getMetaData('og:title') && $ogTitle == 'autoDomain') $doc->setMetaData('og:title', $config->get('sitename').' | '.$doc->getTitle(), 'property');
+		if ($ogUrl && !$doc->getMetaData('og:url')) $doc->setMetaData('og:url', JUri::getInstance()->toString(), 'property');
+		if ($ogType && !$doc->getMetaData('og:type')) $doc->setMetaData('og:type', 'article', 'property');
+		if ($ogDescription && !$doc->getMetaData('og:description')) $doc->setMetaData('og:description', $doc->getDescription(), 'property');
+		if ($ogImage && !$doc->getMetaData('og:image')) {
+			$doc->setMetaData('og:image', JUri::getInstance()->base().$ogImage, 'property');
+			$image_info = getimagesize($ogImage);
+			$doc->setMetaData('og:image:width', $image_info[0], 'property');
+			$doc->setMetaData('og:image:height', $image_info[1], 'property');
+			$doc->setMetaData('og:image:type', $image_info['mime'], 'property');
+			if ($ogImageAlt = $this->params->get('ogImageAlt', false)) $doc->setMetaData('og:image:alt', $ogImageAlt, 'property');
+		}
+		if ($ogLocale) $doc->setMetaData('og:locale', $ogLocale, 'property');
+	}
+	
  	public function onUserLogin($user, $options = array()) {
 		$app = JFactory::getApplication();
-		if (!$app->isSite()) return true; // DO NOT RUN IN ADMIN AREA
+		if ($app->isClient('administrator')) return true; // DO NOT RUN IN ADMIN AREA
 		
 		// HANDLE DISPLAY OF LOGIN MESSAGE
 		if ($this->params->get('afterLoginSystemMessageEnabled', 0) != false) {
@@ -433,7 +432,7 @@ JAVASCRIPT;
 
 	function onUserLoginFailure() {
 		$app = JFactory::getApplication();
-		if (!$app->isSite()) return true; // DO NOT RUN IN ADMIN AREA
+		if ($app->isClient('administrator')) return true; // DO NOT RUN IN ADMIN AREA
 		
 		// HANDLE FAILED LOGIN
 		if ($this->params->get('failedLoginRedirectEnabled', false) == 1) {
@@ -448,9 +447,7 @@ JAVASCRIPT;
 				$app->enqueueMessage($failedLoginSystemMessage, $failedLoginSystemMessageType);
 			}
 			if (strlen($failedLoginRedirectUrl)) {
-				// if (strlen($failedLoginSystemMessage)) $app->redirect($failedLoginRedirectUrl, $failedLoginSystemMessage, $failedLoginSystemMessageType);
 				if (strlen($failedLoginSystemMessage)) $app->redirect(JRoute::_('index.php?Itemid='.$failedLoginRedirectUrl, false), $failedLoginSystemMessage, $failedLoginSystemMessageType);
-				// else $app->redirect($failedLoginRedirectUrl);
 				else $app->redirect(JRoute::_('index.php?Itemid='.$failedLoginRedirectUrl, false));
 			}
 		}
@@ -472,14 +469,9 @@ JAVASCRIPT;
 	
 	function replaceContentAnywhere() {
 		$replaceCustom = $this->params->get('replaceCustom', false);
-		$buffer = JResponse::getBody();
+		$buffer = JFactory::getApplication()->getBody();
 		if (strpos($buffer, '{swiss.') === false && !strlen($replaceCustom)) return;
 		$user  = JFactory::getUser();
-		/* if (strpos($buffer, '{swiss.user.dob') !== false) {
-			// GET THE USERS PROFILE DATA
-			$db = JFactory::getDbo();
-			$db->setQuery("SELECT profile_value FROM #__user_profiles WHERE profile_key = 'swiss.dob' AND user_id = ".(int)$user->id);
-		} */
 		$search = array(
 			'{swiss.username}', 
 			'{swiss.name}', 
@@ -510,14 +502,11 @@ JAVASCRIPT;
 				$data = explode('=>', $row);
 				$search[] = $data[0];
 				$replace[] = $data[1];
-				// $search[] = substr($row, 0, strpos($row, '=>'));
-				// $replace[] = substr($row, strpos($row, '=>')+2, strlen($row)-strpos($row, '=>'));
 			}
 		}
-		// echo"<pre>";print_r($search);echo"</pre>";echo"<pre>";print_r($replace);echo"</pre>";exit;
 // TODO: SOME SORT OF CLEANUP OF UNUSED {swiss.? STRINGS?
 		$buffer = str_replace($search, $replace, $buffer);
-		JResponse::setBody($buffer);
+		JFactory::getApplication()->setBody($buffer);
 	}
 	
     function cookieDirective()  {
@@ -534,10 +523,10 @@ JAVASCRIPT;
 				</p>
 			</div>
 		';
-		$body = JResponse::getBody();
+		$body = JFactory::getApplication()->getBody();
 		// CSS IS ADDED IN THE onBeforeCompileHead METHOD
 		$body = str_replace('</body>', $output.'</body>', $body);
-		JResponse::setBody($body);
+		JFactory::getApplication()->setBody($body);
 		return true;
     }
 	
@@ -553,36 +542,30 @@ JAVASCRIPT;
 		$retStr .= '</ul>';
 		return $retStr;
 	}
-	
-	
+
 	function killMessage($messageText) {
 		// REMOVE A MESSAGE FROM THE MESSAGE QUEUE
 		// USAGE: killMessage('matching part of the message text');
-		// exit('here');
 		$app = JFactory::getApplication();
 		$appReflection = new ReflectionClass(get_class($app));
 		$_messageQueue = $appReflection->getProperty('_messageQueue');
 		$_messageQueue->setAccessible(true);
 		$messages = $_messageQueue->getValue($app);
 		foreach($messages as $key=>$message) {
-			// echo 'Key: '.$key.' => '.$message['message']." (message)<hr />";
-			// if ($message['message'] == $messageText) {
 			if (strpos($message['message'], $messageText) !== false) {
 				unset($messages[$key]);
-				// echo "----> UNSET IT <----";
 			}
 		}
 		$_messageQueue->setValue($app,$messages);
 	}
 	
-    function enableAdminLink()  {
+    function enableAdminLink() {
 		// FORCE BACKEND ADMIN LINK TO ALWAYS WORK
-		$body = JResponse::getBody();
-		// exit('xxx'.$body).
-		// CSS IS ADDED IN THE onBeforeCompileHead METHOD
-		// $body = str_replace('<a class="admin-logo disabled">', '<a class="admin-logo" href="index.php">', $body);
-		$body = str_replace('admin-logo disabled', 'admin-logo" href="index.php', $body);
-		JResponse::setBody($body);
+		$body = JFactory::getApplication()->getBody();
+		$pattern = '/<div class="logo.*?<\/div>/s';
+		$replacement = '<a class="logo" href="index.php"><img loading="eager" decoding="async" src="../media/templates/administrator/atum/images/logos/brand-large.svg" alt="Back to Dashboard"><img class="logo-collapsed" loading="eager" decoding="async" src="../media/templates/administrator/atum/images/logos/brand-small.svg" alt="Back to Dashboard"></a>';
+		$body = preg_replace($pattern, $replacement, $body);
+		JFactory::getApplication()->setBody($body);
 		return true;
     }
 }
