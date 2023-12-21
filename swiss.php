@@ -457,7 +457,7 @@ JAVASCRIPT;
 	function onUserAfterSave($user, $isNew, $success, $msg) {
 		$app = JFactory::getApplication();
 		// AUTOMATICALLY LOG THE NEW USER IN
-		if($app->isSite() && $isNew && $this->params->get('autoLoginEnabled') == 1) {
+		if($app->isClient('site') && $isNew && $this->params->get('autoLoginEnabled') == 1) {
 			$credentials = array(
 				"username" => $user["email"], 
 				"password" => $user["password_clear"]
