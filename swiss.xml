@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="2.5" type="plugin" group="system">
+<extension type="plugin" group="system">
 	<name>System - Swiss Army Knife</name>
 	<author>Chris Sheridan</author>
 	<creationDate>2023-02-17</creationDate>
@@ -7,7 +7,7 @@
 	<license>GNU General Public License</license>
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
-	<version>4.0.0</version>
+	<version>4.1.0</version>
 	<updateservers>
 		<server type="extension" name="Swiss Army Knife" priority="1">https://webfoolery.com/downloads/joomla/plgSysSwiss_update.xml</server>
 	</updateservers>
@@ -17,17 +17,17 @@
 		<folder>fields</folder>
 		<folder>language</folder>
 	</files>
-    <languages folder="language">
+    <!-- <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_system_swiss.ini</language>
         <language tag="en-GB">en-GB/en-GB.plg_system_swiss.sys.ini</language>
-    </languages> 
+    </languages>  -->
     <config>
         <fields name="params">
             <fieldset name="basic">
 			</fieldset>
 
 
-			<fieldset name="PLG_SWISS_SITE_OFFLINE_LABEL">
+			<fieldset name="siteoffline" label="PLG_SWISS_SITE_OFFLINE_LABEL">
 				<field name="siteOfflineEnabled" type="radio" default="0" label="Take site offline" description="When enabled visitors to the site will be redirected or shown the HTML below. You can specify IP addresses that will be allowed normal access to the site.">
 					<option value="0">No</option>
 					<option value="redirect">Yes, by redirect</option>
@@ -39,7 +39,7 @@
 			</fieldset>
 
 
-			<fieldset name="PLG_SWISS_ENABLE_ADMIN_LINK_IN_BACKEND_FIELDSET_LABEL">
+			<fieldset name="enablebackendadminlink" label="PLG_SWISS_ENABLE_ADMIN_LINK_IN_BACKEND_FIELDSET_LABEL">
 				<field name="enableAdminLink" type="radio" default="1" label="Enable admin link" description="When enabled the admin icon/link in the top left of the standard administrator template will never be disabled.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -47,7 +47,7 @@
 			</fieldset>
 
 
-			<fieldset name="PLG_SWISS_GENERATOR_OG_TAG_REPLACEMENT_FIELDSET_LABEL">
+			<fieldset name="generatorandogtags" label="PLG_SWISS_GENERATOR_OG_TAG_REPLACEMENT_FIELDSET_LABEL">
 				<field name="generatorTagEnabled" type="radio" default="1" label="Enable generator tag change" description="When enabled this will allow you to edit or remove the generator metatag.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -105,7 +105,7 @@
 			</fieldset>
 
 
-			<fieldset name="PLG_SWISS_CONTENT_REPLACEMENT_FIELDSET_LABEL">
+			<fieldset name="contentreplacement" label="PLG_SWISS_CONTENT_REPLACEMENT_FIELDSET_LABEL">
 				<field name="replaceAnywhereEnabled" type="radio" default="0" label="Enable replaceAnywhere" description="When enabled this will allow use of variables in braces within the site content in articles, modules, plugins etc.&lt;br /&gt;Some variables are set up already:&lt;br /&gt; - {swiss.name}&lt;br /&gt; - {swiss.username}&lt;br /&gt; - {swiss.email}&lt;br /&gt; - {swiss.lastvisitdate}&lt;br /&gt; - {swiss.today.dd/mm/yyyy}&lt;br /&gt; - {swiss.today.day}&lt;br /&gt; - {swiss.today.date}&lt;br /&gt; - {swiss.today.month}&lt;br /&gt; - {swiss.today.year}">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -114,7 +114,7 @@
 			</fieldset>
 
 
-			<fieldset name="PLG_SWISS_INSERT_CODE_FIELDSET_LABEL">
+			<fieldset name="insertcode" label="PLG_SWISS_INSERT_CODE_FIELDSET_LABEL">
 				<field name="insertCodeEnabled" type="radio" default="0" label="Enable insertion of additional code" description="When enabled this will allow you to add CSS, javascript or HTML to the final page.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -130,7 +130,7 @@
 			</fieldset>
 			
 			
-			<fieldset name="PLG_SWISS_AFTER_LOGIN_FIELDSET_LABEL">
+			<fieldset name="aftterlogin" label="PLG_SWISS_AFTER_LOGIN_FIELDSET_LABEL">
 				<field name="oneClickLogoutEnabled" type="radio" label="Enable 1 click logout" default="0" description="When enabled logged in users can click the logout button without needing to confirm their action. This also means that you can create one click logout links, eg.&lt;br /&gt;index.php?option=com_users&amp;task=user.logout.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -181,7 +181,7 @@
 			</fieldset>
 			
 			
-            <fieldset name="PLG_SWISS_REGISTERED_USER_HOMEPAGE_FIELDSET_LABEL">
+            <fieldset name="registeredhomepage" label="PLG_SWISS_REGISTERED_USER_HOMEPAGE_FIELDSET_LABEL">
 				<field name="registeredUserHomepageEnabled" type="radio" default="0" label="Enable registered homepage" description="When enabled this will allow you to set a different home page for your registered users to that set in the menu structure. The result will be that when they click any HOME link they will be taken to the page you assign here.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -201,7 +201,7 @@
 			</fieldset>
 			
 			
-			<fieldset name="PLG_SWISS_COOKIE_DIRECTIVE_FIELDSET_LABEL">
+			<fieldset name="cookiedirective" label="PLG_SWISS_COOKIE_DIRECTIVE_FIELDSET_LABEL">
 				<field name="cookieDirectiveEnabled" type="radio" default="0" label="Enable cookie alert" description="When enabled this will display info relating to the EU Cookie Directive, namely alerting users of the site that you use cookies. Once they accept the message will be gone from the screen.">
 					<option value="0">No</option>
 					<option value="1">Yes</option>
@@ -228,7 +228,7 @@
 			</fieldset>
 
 
-			<fieldset name="PLG_SWISS_EXPERIMENTAL_FIELDSET_LABEL">
+			<fieldset name="experimental" label="PLG_SWISS_EXPERIMENTAL_FIELDSET_LABEL">
 				<field type="spacer" name="s11" label="&lt;span style='padding:5px;background:red;color:white;'&gt;You should not use these unless you are prepared to do some coding! These are experimental works in progress (WIP)!&lt;/span&gt;" />
 				<field type="spacer" name="s12" hr="true" />
 				<field name="autoLoginEnabled" type="radio" default="0" label="&lt;span style='font-weight:bold;color:red;'&gt;[WIP]&lt;/span&gt; Enable registration autologin" description="NB: THIS IS EXPERIMENTAL!&lt;br /&gt;When enabled this will automatically log newly registered user in. Note that it will only work if the registration setting is NONE in UserManager->Options->NewUserAccountActivation=NONE - otherwise the account is blocked and it will create a login failure.">
@@ -263,7 +263,7 @@
 			</fieldset>
 			
 				
-			<fieldset name="PLG_SWISS_SESSION_MANAGER_LABEL" addfieldpath="plugins/system/swiss/fields">
+			<fieldset name="sessions" label="PLG_SWISS_SESSION_MANAGER_LABEL" addfieldpath="plugins/system/swiss/fields">
 				<field name="enableKeepAliveAllPages" type="radio" default="0" label="Enable session keep alive" description="When enabled you can specify which user groups will be able to stay logged in even after long periods of page inactivity. The plugin will add a small javascript snippet that will invisibly open a page via AJAX before the user is logged out in order to maintain the session.&lt;br /&gt;&lt;b&gt;NB:&lt;/b&gt; Joomla automatically addes a keepAlive script to any pages that have a login module, so even with this feature disabled in the plugin you may find some of your pages display keepAlive behaviour!">
 					<option value="0">No</option>
 					<option value="1">Yes</option>

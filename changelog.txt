@@ -1,26 +1,36 @@
-2014-12-16 
-	Added external CSS sources
-2014-12-29 
-	Added front end session maintaining tools, usergroup based keepalive and usergroup based end of session alerts
-2019-09-10
-	Changed version to 1.6
-	Added FORCE ENABLE BACKEND ADMIN LINK to prevent admin templates from disabling the top left admin link/icon
-	Added database query output. Needs save option and also needs ability to be limited by IP, user etc.
-	Session management:
-		This isn't working, also looks like J! is doing this automatically for Superadmin?
-		Removed Mootools dependency in field widthheight
-	Tested in Joomla 3.9.11 & seems to work in all aspects other than experimental stuff
-2020-05-22
-	Changed version to 1.7
-	Added facility to add custom code to the <head> section, either after opening tag or before closing tag
-2022-01-12
-	Version update: 1.8  
-	Fixes issue when adding custom code immediately after opening `<head>` tag (code was placed before the tag)
-2022-04-02  
-	Version update 1.9  
-	Fixes a mistake in last version where hardcoded links to a specific site caused OpenGraph data for that site to be embedded into the plugin code. This meant that any sites with the plugin installed were displaying OG data for that site instead of its own OG data  
-	Adds a dedicated OpenGraph metadata editor for adding content to the `Generator` section
+2024-02-25
+Version update 4.1.0
+Fixes missing language strings on backend. Identified cause of long standing issue where all language strings in the ini file had to be prepended with COM_SOMETHING and suffixed with an extra _FIELD_LABEL. This was driving me mad! Turns out I was using a language string in the name of the fieldsets in the XML file but you can actually add a label to the fieldset with the text (language string) that you want and that parses exactly as you type it. Hallelula!
+
 2023-02-19
-	Version update 4.0.0
-	Code modifications to make the plugin suitable to Joomla!4.x
-	Improvements to the OpenGraph & Twitter metadata. They are now only injected if they don'e exist, so other components can set them more accurately if needed
+Version update 4.0.0
+Code modifications to make the plugin suitable to Joomla!4.x
+Improvements to the OpenGraph & Twitter metadata. They are now only injected if they don'e exist, so other components can set them more accurately if needed
+
+2022-04-02  
+Version update 1.9  
+Fixes a mistake in last version where hardcoded links to a specific site caused OpenGraph data for that site to be embedded into the plugin code. This meant that any sites with the plugin installed were displaying OG data for that site instead of its own OG data  
+Adds a dedicated OpenGraph metadata editor for adding content to the `Generator` section
+
+2022-01-12
+Version update: 1.8  
+Fixes issue when adding custom code immediately after opening `<head>` tag (code was placed before the tag)
+
+2020-05-22
+Changed version to 1.7
+Added facility to add custom code to the <head> section, either after opening tag or before closing tag
+
+2019-09-10
+Changed version to 1.6
+Added FORCE ENABLE BACKEND ADMIN LINK to prevent admin templates from disabling the top left admin link/icon
+Added database query output. Needs save option and also needs ability to be limited by IP, user etc.
+Session management:
+This isn't working, also looks like J! is doing this automatically for Superadmin?
+Removed Mootools dependency in field widthheight
+Tested in Joomla 3.9.11 & seems to work in all aspects other than experimental stuff
+
+2014-12-29 
+Added front end session maintaining tools, usergroup based keepalive and usergroup based end of session alerts
+
+2014-12-16 
+Added external CSS sources

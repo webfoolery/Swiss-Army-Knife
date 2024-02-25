@@ -31,6 +31,16 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 
 ## Changelog  
 
+**2024-02-25**
+Version update 4.1.0
+Fixes missing language strings on backend. Identified cause of long standing issue where all language strings in the ini file had to be prepended with COM_SOMETHING and suffixed with an extra _FIELD_LABEL. This was driving me mad! Turns out I was using a language string in the name of the fieldsets in the XML file but you can actually add a label to the fieldset with the text (language string) that you want and that parses exactly as you type it. Hallelula!
+Restricts language files to remain inside the extension's directory structure rather than adding them to the administrator/languages directory
+Removes the en-GB prefix from the language files in line with Joomla!4 guidelines
+
+**2023-12-21**
+Version 4.0.1
+Removes deprecated `isSite()` method calls from swiss.php
+
 **2023-02-19**
 Version update 4.0.0
 Code modifications to make the plugin suitable to Joomla!4.x
