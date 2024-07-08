@@ -31,7 +31,7 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 
 ## Changelog  
 
-**2024-02-25**  
+**2024-07-08**  
 Version update 4.1.1
 Fixes image path for Twitter & OpenGraph meta tags. Joomla 4 introduced a system of appending metadata to image paths that are created from the Joomla Media Manager. These new paths don't seem to render on social media when sharing the link to the page. This update reverts the image path in the meta tags back to the standard path.
 
