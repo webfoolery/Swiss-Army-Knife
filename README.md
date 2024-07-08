@@ -32,6 +32,10 @@ This plugin is intended to be a one stop shop for tweaks and functionality insid
 ## Changelog  
 
 **2024-02-25**  
+Version update 4.1.1
+Fixes image path for Twitter & OpenGraph meta tags. Joomla 4 introduced a system of appending metadata to image paths that are created from the Joomla Media Manager. These new paths don't seem to render on social media when sharing the link to the page. This update reverts the image path in the meta tags back to the standard path.
+
+**2024-02-25**  
 Version update 4.1.0  
 Fixes missing language strings on backend. Identified cause of long standing issue where all language strings in the ini file had to be prepended with COM_SOMETHING and suffixed with an extra _FIELD_LABEL. This was driving me mad! Turns out I was using a language string in the name of the fieldsets in the XML file but you can actually add a label to the fieldset with the text (language string) that you want and that parses exactly as you type it. Hallelula!  
 Restricts language files to remain inside the extension's directory structure rather than adding them to the administrator/languages directory
