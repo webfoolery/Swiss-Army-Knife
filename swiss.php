@@ -178,7 +178,8 @@ class plgSystemSwiss extends JPlugin {
 		if ($this->params->get('cookieDirectiveEnabled', false) == 1) $this->cookieDirective();
 		
 		// INSERT ANY REQUESTED BODY CODE
-		if ($this->params->get('insertCodeEnabled', false) == 1) {
+		$isHTMLpage = (isset($_GET['format']) && $_GET['format'] != 'html' ? false : true);
+		if ($isHTMLpage & $this->params->get('insertCodeEnabled', false) == 1) {
 			$insertBodyStart = $this->params->get('bodyStart', '');
 			$insertBodyEnd = $this->params->get('bodyEnd', '');
 			$insertHeadStart = $this->params->get('headStart', '');

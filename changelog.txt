@@ -1,4 +1,8 @@
-2024-02-25
+2025-02-13
+Version 4.2 
+Code Insertion has been seen to affect things that were unforeseen... I saw an XML sitemap from JSitemap PRO (com_jmap) where a Javascript insertion was placed inside their XML sitemap. For now I've excluded Code Insertion on any pages where the 'format' URL variable is set, eg. https://yoursite.com/index.php?option=com_jmap&view=sitemap&format=xml
+
+2024-07-08
 Version update 4.1.1
 Fixes image path for Twitter & OpenGraph meta tags. Joomla 4 introduced a system of appending metadata to image paths that are created from the Joomla Media Manager. These new paths don't seem to render on social media when sharing the link to the page. This update reverts the image path in the meta tags back to the standard path.
 
