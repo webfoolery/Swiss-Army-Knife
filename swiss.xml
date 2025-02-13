@@ -7,7 +7,7 @@
 	<license>GNU General Public License</license>
 	<authorEmail>joomla@webfoolery.com</authorEmail>
 	<authorUrl>webfoolery.com</authorUrl>
-	<version>4.1.1</version>
+	<version>4.2</version>
 	<updateservers>
 		<server type="extension" name="Swiss Army Knife" priority="1">https://webfoolery.com/downloads/joomla/plgSysSwiss_update.xml</server>
 	</updateservers>
